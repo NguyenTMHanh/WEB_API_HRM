@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WEB_API_HRM", "WEB_API_HRM\WEB_API_HRM.csproj", "{FDA67B47-B485-4BDF-825B-3CB2B34E788C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDA67B47-B485-4BDF-825B-3CB2B34E788C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA67B47-B485-4BDF-825B-3CB2B34E788C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA67B47-B485-4BDF-825B-3CB2B34E788C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA67B47-B485-4BDF-825B-3CB2B34E788C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BD18C1F-AB4D-4C6D-BD95-5077D20CB92C}
+	EndGlobalSection
+EndGlobal
