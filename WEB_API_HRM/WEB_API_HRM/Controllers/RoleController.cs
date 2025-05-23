@@ -75,7 +75,6 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "CanViewRoles")]
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _roleRepository.GetAllRolesAsync();
@@ -125,10 +124,10 @@ namespace WEB_API_HRM.Controllers
                 }).ToList();
             }
 
-            var result = await _roleRepository.UpdateRoleAsync(role);
+            var (result, affectedUserId) = await _roleRepository.UpdateRoleAsync(role);
             if (result.Succeeded)
             {
-                return Ok(new Response(0, "Role updated successfully"));
+                return Ok(new Response(0, "Role updated successfully", data: new { AffectedUserId = affectedUserId }));
             }
 
             var errors = result.Errors.Select(e => e.Description).ToList();

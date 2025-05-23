@@ -10,5 +10,7 @@
         public const int ModuleNotFound = 1007;       // Module không tồn tại
         public const int ActionNotFound = 1008;       // Action không tồn tại
         public const int UserNotFound = 1009;         // User không tồn tại
+        public const int InvalidRequest = 5; 
+        public const int InvalidToken = 6;
     }
 }

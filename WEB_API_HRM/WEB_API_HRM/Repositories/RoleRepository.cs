@@ -85,12 +85,12 @@ namespace WEB_API_HRM.Repositories
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> UpdateRoleAsync(ApplicationRole model)
+        public async Task<(IdentityResult Result, string UserId)> UpdateRoleAsync(ApplicationRole model)
         {
             var role = await _roleManager.FindByIdAsync(model.Id);
             if (role == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Role not found" });
+                return (IdentityResult.Failed(new IdentityError { Description = "Role not found" }), null);
             }
 
             role.Name = model.Name;
@@ -108,7 +108,7 @@ namespace WEB_API_HRM.Repositories
 
                     if (module == null || action == null)
                     {
-                        return IdentityResult.Failed(new IdentityError { Description = $"ModuleId '{rma.ModuleId}' or ActionId '{rma.ActionId}' does not exist." });
+                        return (IdentityResult.Failed(new IdentityError { Description = $"ModuleId '{rma.ModuleId}' or ActionId '{rma.ActionId}' does not exist." }), null);
                     }
 
                     var newRma = new RoleModuleActionModel
@@ -123,7 +123,14 @@ namespace WEB_API_HRM.Repositories
                 await _context.SaveChangesAsync();
             }
 
-            return await _roleManager.UpdateAsync(role);
+            var result = await _roleManager.UpdateAsync(role);
+
+            // Tìm tất cả user thuộc vai trò này
+            var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
+            var userIds = usersInRole.Select(u => u.Id).ToList();
+
+            // Trả về kết quả và danh sách userId
+            return (result, userIds.FirstOrDefault());
         }
 
         public async Task<IdentityResult> DeleteRoleAsync(string roleId)

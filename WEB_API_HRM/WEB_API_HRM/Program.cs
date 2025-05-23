@@ -99,20 +99,16 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("CanViewRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "view"))
-              .AddRequirements(new PermissionRequirement("allModule", "fullAuthority")));
+        policy.AddRequirements(new PermissionRequirement("permission", "view")));
 
     options.AddPolicy("CanCreateRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "create"))
-              .AddRequirements(new PermissionRequirement("allModule", "create")));
+        policy.AddRequirements(new PermissionRequirement("permission", "create")));
 
     options.AddPolicy("CanUpdateRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "update"))
-              .AddRequirements(new PermissionRequirement("allModule", "update")));
+        policy.AddRequirements(new PermissionRequirement("permission", "update")));
 
     options.AddPolicy("CanDeleteRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "delete"))
-              .AddRequirements(new PermissionRequirement("allModule", "delete")));
+        policy.AddRequirements(new PermissionRequirement("permission", "delete")));
 });
 
 // Đăng ký PermissionAuthorizationHandler

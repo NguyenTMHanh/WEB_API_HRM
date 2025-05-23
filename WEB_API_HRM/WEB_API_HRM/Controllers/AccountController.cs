@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using WEB_API_HRM.Helpers;
 using WEB_API_HRM.Models;
 using WEB_API_HRM.Repositories;
@@ -77,26 +78,32 @@ namespace WEB_API_HRM.Controllers
             }
         }
 
-        //[HttpGet("{id}")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]        
-        //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        //public async Task<IActionResult> GetName([FromBody] string idUser)
-        //{
-        //    try
-        //    {
-        //        var fullName = await accountRepo.GetLastFirstName(idUser);
-        //        if (string.IsNullOrEmpty(fullName))
-        //        {
-        //            return NotFound(new Response(CustomCodes.UserNotFound, "User not found", errors: new List<string> { "No user found with the provided ID." }));
-        //        }
-        //        return Ok(new Response(0, "Name retrieved successfully", data: fullName));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
-        //    }
-        //}
+        [HttpPost("RenewToken")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RenewToken([FromBody] LoginResponse model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.AccessToken) || string.IsNullOrEmpty(model.RefreshToken))
+                {
+                    return BadRequest(new Response(CustomCodes.InvalidRequest, "Invalid request", errors: new List<string> { "Access token and refresh token are required" }));
+                }
+
+                var result = await accountRepo.RenewTokenAsync(model.AccessToken, model.RefreshToken);
+                return Ok(new Response(0, "Token refreshed successfully", data: result));
+            }
+            catch (SecurityTokenException ex)
+            {
+                return Unauthorized(new Response(CustomCodes.InvalidToken, "Token refresh failed", errors: new List<string> { ex.Message }));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request", errors: new List<string> { ex.Message }));
+            }
+        }
 
     }
 }

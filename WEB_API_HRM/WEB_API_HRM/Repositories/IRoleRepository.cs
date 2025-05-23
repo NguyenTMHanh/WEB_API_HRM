@@ -7,7 +7,7 @@ namespace WEB_API_HRM.Repositories
     public interface IRoleRepository
     {
         Task<IdentityResult> CreateRoleAsync(ApplicationRole model);
-        Task<IdentityResult> UpdateRoleAsync(ApplicationRole model);
+        Task<(IdentityResult Result, string UserId)> UpdateRoleAsync(ApplicationRole model);
         Task<IdentityResult> DeleteRoleAsync(string roleId);
         Task<ApplicationRole> GetRoleAsync(string roleId);
         Task<List<object>> GetRoleUserAsync(string userId);
