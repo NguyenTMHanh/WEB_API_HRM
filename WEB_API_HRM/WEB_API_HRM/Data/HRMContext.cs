@@ -17,6 +17,7 @@ namespace WEB_API_HRM.Data
         public DbSet<RoleModuleActionModel> RoleModuleActions { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<RankModel> Ranks { get; set; }
+        public DbSet<DepartmentModel> Departments { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
