@@ -229,14 +229,28 @@ namespace WEB_API_HRM.Repositories
         {
             try
             {
-                var roleCount = await _roleManager.Roles.CountAsync();
-                var nextRoleNumber = roleCount + 1;
-                var roleCode = $"ROLE{nextRoleNumber:D3}";
-                return roleCode;
+                var roleFinal = await _roleManager.Roles
+                    .OrderBy(r => r.Id)
+                    .LastOrDefaultAsync();
+
+                if (roleFinal == null || string.IsNullOrEmpty(roleFinal.Id))
+                {
+                    return "ROLE001";
+                }
+
+                string numericPart = roleFinal.Id.Replace("ROLE", "").Trim();
+                if (int.TryParse(numericPart, out int currentNumber))
+                {
+                    var nextNumber = currentNumber + 1;
+                    var rankCode = $"ROLE{nextNumber:D3}";
+                    return rankCode;
+                }
+                return "ROLE001";
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error generating role code: {ex.Message}");
+                Console.WriteLine($"Error in GetCodeRank: {ex.Message}");
+                throw;
             }
         }
 

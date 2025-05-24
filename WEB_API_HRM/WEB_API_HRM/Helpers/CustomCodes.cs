@@ -12,5 +12,7 @@
         public const int UserNotFound = 1009;         // User không tồn tại
         public const int InvalidRequest = 5; 
         public const int InvalidToken = 6;
+        public const int NotFound = 1010;
+        public const int Exists = 1011;
     }
 }
