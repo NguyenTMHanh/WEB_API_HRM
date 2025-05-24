@@ -18,6 +18,7 @@ namespace WEB_API_HRM.Data
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<RankModel> Ranks { get; set; }
         public DbSet<DepartmentModel> Departments { get; set; }
+        public DbSet<JobTitleModel> JobTitles { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,6 +43,18 @@ namespace WEB_API_HRM.Data
                 .WithMany(r => r.RoleModuleActions) 
                 .HasForeignKey(r => r.RoleId)
                 .HasPrincipalKey(r => r.Id);
+
+            modelBuilder.Entity<JobTitleModel>()
+                .HasOne(j => j.Rank) 
+                .WithMany() 
+                .HasForeignKey(j => j.RankId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            modelBuilder.Entity<JobTitleModel>()
+                .HasOne(j => j.Role) 
+                .WithMany() 
+                .HasForeignKey(j => j.RoleId)
+                .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }
