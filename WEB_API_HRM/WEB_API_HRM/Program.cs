@@ -94,6 +94,7 @@ builder.Services.AddAuthentication(options =>
 // Đăng ký các repository
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRankRepository, RankRepository>();
 
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>
@@ -109,6 +110,21 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("CanDeleteRoles", policy =>
         policy.AddRequirements(new PermissionRequirement("permission", "delete")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "view")));
+
+    options.AddPolicy("CanCreateSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "create")));
+
+    options.AddPolicy("CanUpdateSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "update")));
+
+    options.AddPolicy("CanDeleteSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "delete")));
 });
 
 // Đăng ký PermissionAuthorizationHandler
