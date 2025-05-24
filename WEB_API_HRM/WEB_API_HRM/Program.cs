@@ -96,6 +96,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRankRepository, RankRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IJobTitleRepository, JobTitleRepository>();
 
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>

@@ -77,7 +77,7 @@ namespace WEB_API_HRM.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetCodeRank: {ex.Message}");
+                Console.WriteLine($"Error in GetCodeDepartment: {ex.Message}");
                 throw;
             }
         }
