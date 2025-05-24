@@ -1,33 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WEB_API_HRM.Repositories;
-using WEB_API_HRM.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WEB_API_HRM.Helpers;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using WEB_API_HRM.Models;
+using WEB_API_HRM.Repositories;
 using WEB_API_HRM.RSP;
-using Microsoft.AspNetCore.Authorization;
 
 namespace WEB_API_HRM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RankController : ControllerBase
+    public class DepartmentController : Controller
     {
-        private readonly IRankRepository _rankRepository;
-
-        public RankController(IRankRepository rankRepository)
+        private readonly IDepartmentRepository _departmentRepository;
+        public DepartmentController(IDepartmentRepository departmentRepository)
         {
-            _rankRepository = rankRepository;
+            _departmentRepository = departmentRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RankModel>>> GetAllRanks()
+        public async Task<ActionResult<IEnumerable<DepartmentModel>>> GetAllDepartments()
         {
             try
             {
-                var ranks = await _rankRepository.GetAllRanksAsync();
-                return Ok(ranks);
+                var departments = await _departmentRepository.GetAllDepartmentsAsync();
+                return Ok(departments);
             }
             catch (Exception ex)
             {
@@ -37,16 +33,16 @@ namespace WEB_API_HRM.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Policy = "CanViewSettings")]
-        public async Task<ActionResult<RankModel>> GetRank(string id)
+        public async Task<ActionResult<DepartmentModel>> GetDepartment(string id)
         {
             try
             {
-                var rank = await _rankRepository.GetRankAsync(id);
-                if (rank == null)
+                var department = await _departmentRepository.GetDepartmentAsync(id);
+                if (department == null)
                 {
-                    return NotFound(new { ErrorCode = CustomCodes.NotFound, Message = "Rank not found" });
+                    return NotFound(new { ErrorCode = CustomCodes.NotFound, Message = "Department not found" });
                 }
-                return Ok(rank);
+                return Ok(department);
             }
             catch (Exception ex)
             {
@@ -57,77 +53,74 @@ namespace WEB_API_HRM.Controllers
 
         [HttpPost]
         [Authorize(Policy = "CanCreateSettings")]
-        public async Task<IActionResult> CreateRank([FromBody] RankModel model)
+        public async Task<IActionResult> CreateDepartment([FromBody] DepartmentModel model)
         {
             try
             {
-                var result = await _rankRepository.CreateRankAsync(model);
+                var result = await _departmentRepository.CreateDepartmentAsync(model);
                 var errors = result.Errors.Select(e => e.Description).ToList();
-                if (errors.Any(e => e.Contains("Rank already exists in the system.")))
+                if (errors.Any(e => e.Contains("Department already exists in the system.")))
                 {
-                    return BadRequest(new Response(CustomCodes.Exists, "Rank creation failed", errors: errors));
+                    return BadRequest(new Response(CustomCodes.Exists, "Department creation failed", errors: errors));
                 }
 
-                return Ok(new Response(0, "Rank created successfully"));
+                return Ok(new Response(0, "Department created successfully"));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
             }
         }
-
 
         [HttpPut("{id}")]
         [Authorize(Policy = "CanUpdateSettings")]
-        public async Task<ActionResult> UpdateRank(string id, [FromBody] RankModel model)
+        public async Task<ActionResult> UpdateDepartment(string id, [FromBody] DepartmentModel model)
         {
             try
             {
-                var result = await _rankRepository.UpdateRankAsync(id, model);
+                var result = await _departmentRepository.UpdateDepartmentAsync(id, model);
                 var errors = result.Errors.Select(e => e.Description).ToList();
-                if (errors.Any(e => e.Contains("Rank not found")))
+                if (errors.Any(e => e.Contains("Department not found")))
                 {
-                    return BadRequest(new Response(CustomCodes.NotFound, "Rank update failed", errors: errors));
+                    return BadRequest(new Response(CustomCodes.NotFound, "Department update failed", errors: errors));
                 }
 
-                return Ok(new Response(0, "Rank updated successfully"));
+                return Ok(new Response(0, "Department updated successfully"));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
             }
         }
-
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "CanDeleteSettings")]
-        public async Task<ActionResult> DeleteRank(string id)
+        public async Task<ActionResult> DeleteDepartment(string id)
         {
             try
             {
-                var result = await _rankRepository.DeleteRankAsync(id);
+                var result = await _departmentRepository.DeleteDepartmentAsync(id);
                 var errors = result.Errors.Select(e => e.Description).ToList();
-                if (errors.Any(e => e.Contains("Rank not found")))
+                if (errors.Any(e => e.Contains("Department not found")))
                 {
-                    return BadRequest(new Response(CustomCodes.NotFound, "Rank deleted failed", errors: errors));
+                    return BadRequest(new Response(CustomCodes.NotFound, "Department deleted failed", errors: errors));
                 }
 
-                return Ok(new Response(0, "Rank deleted successfully"));
+                return Ok(new Response(0, "Department deleted successfully"));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
             }
         }
-
-        [HttpGet("GetCodeRank")]
+        [HttpGet("GetCodeDepartment")]
         [Authorize(Policy = "CanCreateSettings")]
-        public async Task<IActionResult> GetCodeRank()
+        public async Task<IActionResult> GetCodeDepartment()
         {
             try
             {
-                var roleCode = await _rankRepository.GetCodeRank();
-                return Ok(new Response(0, "Role code retrieved successfully", data: roleCode));
+                var departmentCode = await _departmentRepository.GetCodeDepartment();
+                return Ok(new Response(0, "Role code retrieved successfully", data: departmentCode));
             }
             catch (Exception ex)
             {
