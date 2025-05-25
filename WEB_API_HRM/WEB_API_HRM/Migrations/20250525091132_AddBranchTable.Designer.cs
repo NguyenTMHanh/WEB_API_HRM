@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WEB_API_HRM.Data;
@@ -11,9 +12,10 @@ using WEB_API_HRM.Data;
 namespace WEB_API_HRM.Migrations
 {
     [DbContext(typeof(HRMContext))]
-    partial class HRMContextModelSnapshot : ModelSnapshot
+    [Migration("20250525091132_AddBranchTable")]
+    partial class AddBranchTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -289,7 +291,12 @@ namespace WEB_API_HRM.Migrations
                     b.Property<string>("DepartmentId")
                         .HasColumnType("text");
 
+                    b.Property<string>("BranchModelId")
+                        .HasColumnType("text");
+
                     b.HasKey("BranchId", "DepartmentId");
+
+                    b.HasIndex("BranchModelId");
 
                     b.HasIndex("DepartmentId");
 
@@ -510,10 +517,14 @@ namespace WEB_API_HRM.Migrations
             modelBuilder.Entity("WEB_API_HRM.Models.BranchDepartmentModel", b =>
                 {
                     b.HasOne("WEB_API_HRM.Models.BranchModel", "Branch")
-                        .WithMany("BranchDepartment")
+                        .WithMany()
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("WEB_API_HRM.Models.BranchModel", null)
+                        .WithMany("BranchDepartment")
+                        .HasForeignKey("BranchModelId");
 
                     b.HasOne("WEB_API_HRM.Models.DepartmentModel", "Department")
                         .WithMany()
