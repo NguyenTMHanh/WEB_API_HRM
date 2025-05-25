@@ -84,7 +84,10 @@ namespace WEB_API_HRM.Controllers
                 {
                     return BadRequest(new Response(CustomCodes.NotFound, "Department update failed", errors: errors));
                 }
-
+                else if (errors.Any(e => e.Contains("Department already exists in the system.")))
+                {
+                    return BadRequest(new Response(CustomCodes.Exists, "Department update failed", errors: errors));
+                }
                 return Ok(new Response(0, "Department updated successfully"));
             }
             catch (Exception ex)

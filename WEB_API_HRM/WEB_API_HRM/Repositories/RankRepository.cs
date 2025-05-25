@@ -15,7 +15,7 @@ namespace WEB_API_HRM.Repositories
         public async Task<IdentityResult> CreateRankAsync(RankModel model)
         {
 
-            var existingRank = await _context.Ranks.AnyAsync(r => r.Id == model.Id);
+            var existingRank = await _context.Ranks.AnyAsync(r => r.RankName == model.RankName);
             if (existingRank)
             {
                 return IdentityResult.Failed(new IdentityError { Description = "Rank already exists in the system." });
@@ -97,6 +97,13 @@ namespace WEB_API_HRM.Repositories
                 return IdentityResult.Failed(new IdentityError
                 {
                     Description = "Rank not found"
+                });
+            }
+            else if(await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == model.RankName) != null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "Rank already exists in the system."
                 });
             }
             rank.PriorityLevel = model.PriorityLevel;
