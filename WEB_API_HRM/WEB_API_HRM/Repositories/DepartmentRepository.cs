@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WEB_API_HRM.Data;
 using WEB_API_HRM.Models;
@@ -14,7 +15,7 @@ namespace WEB_API_HRM.Repositories
         }
         public async Task<IdentityResult> CreateDepartmentAsync(DepartmentModel model)
         {
-            var existingDepartment = await _context.Departments.AnyAsync(d => d.Id == model.Id);
+            var existingDepartment = await _context.Departments.AnyAsync(d => d.DepartmentName == model.DepartmentName);
             if(existingDepartment)
             {
                 return IdentityResult.Failed(new IdentityError { Description = "Department already exists in the system." });
@@ -97,7 +98,20 @@ namespace WEB_API_HRM.Repositories
                     Description = "Department not found"
                 });
             }
+            else if (await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == model.DepartmentName) != null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "Department already exists in the system."
+                });
+            }
 
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "Position already exists in the system."
+                });
+            }
             department.DepartmentName = model.DepartmentName;
             department.Description = model.Description;
 

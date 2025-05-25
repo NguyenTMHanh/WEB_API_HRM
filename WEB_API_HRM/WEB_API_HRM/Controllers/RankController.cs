@@ -89,6 +89,10 @@ namespace WEB_API_HRM.Controllers
                 {
                     return BadRequest(new Response(CustomCodes.NotFound, "Rank update failed", errors: errors));
                 }
+                else if(errors.Any(e => e.Contains("Rank already exists in the system.")))
+                {
+                    return BadRequest(new Response(CustomCodes.Exists, "Rank update failed", errors: errors));
+                }    
 
                 return Ok(new Response(0, "Rank updated successfully"));
             }

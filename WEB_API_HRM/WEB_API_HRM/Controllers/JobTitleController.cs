@@ -115,13 +115,17 @@ namespace WEB_API_HRM.Controllers
                     {
                         return NotFound(new Response(CustomCodes.NotFound, "Job title update failed: Job title not found", errors: errors));
                     }
+                    else if (errors.Any(e => e.Contains("JobTitle already exists in the system.")))
+                    {
+                        return BadRequest(new Response(CustomCodes.Exists, "Job title update failed: Job title already exists in the system", errors: errors));
+                    }    
                     else if (errors.Any(e => e.Contains("Rank not found.")))
                     {
-                        return BadRequest(new Response(CustomCodes.NotFound, "Job title update failed: Rank not found", errors: errors));
+                        return BadRequest(new Response(CustomCodes.NotFound, "Job title update failed: Job title not found", errors: errors));
                     }
                     else if (errors.Any(e => e.Contains("Role not found.")))
                     {
-                        return BadRequest(new Response(CustomCodes.NotFound, "Job title update failed: Role not found", errors: errors));
+                        return BadRequest(new Response(CustomCodes.NotFound, "Job title update failed: Job title not found", errors: errors));
                     }
                     return BadRequest(new Response(CustomCodes.InvalidRequest, "Job title update failed", errors: errors));
                 }

@@ -107,6 +107,8 @@ namespace WEB_API_HRM.Controllers
                 return NotFound(new Response(CustomCodes.RoleNotFound, "Role not found"));
             }
 
+            
+
             role.Name = model.Name;
             role.NormalizedName = model.NormalizedName;
             role.ConcurrencyStamp = model.ConcurrencyStamp;

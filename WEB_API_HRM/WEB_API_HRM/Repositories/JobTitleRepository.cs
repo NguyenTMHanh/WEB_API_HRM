@@ -19,7 +19,7 @@ namespace WEB_API_HRM.Repositories
 
         public async Task<IdentityResult> CreateJobTitleAsync(JobTitleDto dto)
         {
-            var existingJobTitle = await _context.JobTitles.AnyAsync(j => j.Id == dto.Id);
+            var existingJobTitle = await _context.JobTitles.AnyAsync(j => j.JobTitleName == dto.JobtitleName);
             if (existingJobTitle)
             {
                 return IdentityResult.Failed(new IdentityError { Description = "JobTitle already exists in the system." });
@@ -144,6 +144,13 @@ namespace WEB_API_HRM.Repositories
                 });
             }
 
+            else if(await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == dto.JobtitleName) != null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "JobTitle already exists in the system."
+                });
+            }
             var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == dto.RankName);
             if (rank == null)
             {
