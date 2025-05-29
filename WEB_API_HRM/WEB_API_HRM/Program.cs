@@ -102,6 +102,7 @@ builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<ICheckInOutSettingRepository, CheckInOutRepository>();
 builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
 builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
+builder.Services.AddScoped<IRateInsuranceRepository, RateInsuranceRepository>();
 
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>
