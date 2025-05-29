@@ -22,13 +22,14 @@ namespace WEB_API_HRM.Data
         public DbSet<PositionModel> Positions { get; set; }
         public DbSet<BranchModel> Branchs { get; set; }
         public DbSet<BranchDepartmentModel> BranchDepartment {get; set;}
+        public DbSet<JobTypeModel> JobTypes { get; set; }
+        public DbSet<HolidayModel> Holidays { get; set; }
+        public DbSet<CheckInOutSettingModel> CheckInOutSettings { get; set; }
         #endregion
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Các cấu hình hiện có cho các thực thể khác...
             modelBuilder.Entity<RoleModuleActionModel>()
                 .HasKey(r => new { r.RoleId, r.ModuleId, r.ActionId });
             modelBuilder.Entity<RoleModuleActionModel>()
@@ -46,21 +47,20 @@ namespace WEB_API_HRM.Data
             modelBuilder.Entity<PositionModel>()
                 .HasOne(j => j.Department).WithMany().HasForeignKey(j => j.DepartmentId).OnDelete(DeleteBehavior.Restrict);
 
-            // Cấu hình BranchDepartment như bảng trung gian nhiều-nhiều
             modelBuilder.Entity<BranchDepartmentModel>()
                 .HasKey(b => new { b.BranchId, b.DepartmentId });
 
             modelBuilder.Entity<BranchDepartmentModel>()
                 .HasOne(b => b.Branch)
-                .WithMany(b => b.BranchDepartment) // Liên kết với tập hợp trong BranchModel
+                .WithMany(b => b.BranchDepartment) 
                 .HasForeignKey(b => b.BranchId)
-                .OnDelete(DeleteBehavior.Cascade); // hoặc Restrict, tùy theo nhu cầu
+                .OnDelete(DeleteBehavior.Cascade); 
 
             modelBuilder.Entity<BranchDepartmentModel>()
                 .HasOne(b => b.Department)
                 .WithMany() 
                 .HasForeignKey(b => b.DepartmentId)
-                .OnDelete(DeleteBehavior.Cascade); // hoặc Restrict, tùy theo nhu cầu
+                .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }
