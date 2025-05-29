@@ -99,7 +99,9 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IJobTitleRepository, JobTitleRepository>();
 builder.Services.AddScoped<IPositionRepository, PositionRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
-
+builder.Services.AddScoped<ICheckInOutSettingRepository, CheckInOutRepository>();
+builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
+builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
 
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>

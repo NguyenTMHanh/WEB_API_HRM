@@ -318,6 +318,28 @@ namespace WEB_API_HRM.Migrations
                     b.ToTable("Branchs");
                 });
 
+            modelBuilder.Entity("WEB_API_HRM.Models.CheckInOutSettingModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("BreakHour")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BreakMinute")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("Checkin")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("Checkout")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckInOutSettings");
+                });
+
             modelBuilder.Entity("WEB_API_HRM.Models.DepartmentModel", b =>
                 {
                     b.Property<string>("Id")
@@ -334,6 +356,26 @@ namespace WEB_API_HRM.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.HolidayModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HolidayName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ToDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Holidays");
                 });
 
             modelBuilder.Entity("WEB_API_HRM.Models.JobTitleModel", b =>
@@ -364,6 +406,26 @@ namespace WEB_API_HRM.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("JobTitles");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.JobTypeModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameJobType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("WorkHourMinimum")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkMinuteMinimum")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobTypes");
                 });
 
             modelBuilder.Entity("WEB_API_HRM.Models.ModuleModel", b =>
