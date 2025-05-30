@@ -31,6 +31,7 @@ namespace WEB_API_HRM.Data
         public DbSet<SalaryCoefficientModel> SalaryCoefficients { get; set; }
         public DbSet<AllowanceModel> Allowances { get; set; }
         public DbSet<MinimumWageAreaModel> MinimumWageAreas { get; set; }
+        public DbSet<BasicSettingSalaryModel> BasicSettingSalary { get; set; }
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
