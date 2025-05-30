@@ -33,7 +33,7 @@ namespace WEB_API_HRM.Repositories
                 newHoliday.FromDate = holiday.FromDate;
                 newHoliday.ToDate = holiday.ToDate;
 
-                _context.Holidays.Add(holiday);
+                _context.Holidays.Add(newHoliday);
             }
 
             await _context.SaveChangesAsync();
