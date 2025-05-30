@@ -29,6 +29,7 @@ namespace WEB_API_HRM.Data
         public DbSet<TaxRateProgressionModel> TaxRateProgressions { get; set; }
         public DbSet<DeductionLevelModel> DeductionLevel { get; set; }
         public DbSet<SalaryCoefficientModel> SalaryCoefficients { get; set; }
+        public DbSet<AllowanceModel> Allowances { get; set; }
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
