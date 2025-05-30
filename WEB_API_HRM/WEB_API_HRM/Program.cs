@@ -105,7 +105,7 @@ builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
 builder.Services.AddScoped<IRateInsuranceRepository, RateInsuranceRepository>();
 builder.Services.AddScoped<ITaxRateProgressionRepository, TaxRateProgressionRepository>();
 builder.Services.AddScoped<IDeductionLevelRepository, DeductionLevelRepository>();
-
+builder.Services.AddScoped<ISalaryCoefficientRepository, SalaryCoefficientRepository>();
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>
 {
