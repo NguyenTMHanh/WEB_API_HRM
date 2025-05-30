@@ -18,7 +18,6 @@ namespace WEB_API_HRM.Controllers
             _rateInsuranceRepository = rateInsuranceRepository;
         }
         [HttpGet("GetRateInsurance")]
-        [Authorize(Policy = "CanViewSettings")]
         public async Task<ActionResult<RateInsuranceModel>> GetRateInsuranceSetting()
         {
             try

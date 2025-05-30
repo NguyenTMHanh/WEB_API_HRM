@@ -28,7 +28,7 @@ namespace WEB_API_HRM.Repositories
             {
                 if (holiday == null) continue;
                 var newHoliday = new HolidayModel();
-                newHoliday.Id = holiday.Id;
+                newHoliday.Id = Guid.NewGuid().ToString();
                 newHoliday.HolidayName = holiday.HolidayName;
                 newHoliday.FromDate = holiday.FromDate;
                 newHoliday.ToDate = holiday.ToDate;
