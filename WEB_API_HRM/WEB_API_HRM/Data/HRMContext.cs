@@ -28,6 +28,7 @@ namespace WEB_API_HRM.Data
         public DbSet<RateInsuranceModel> RateInsurances { get; set; }
         public DbSet<TaxRateProgressionModel> TaxRateProgressions { get; set; }
         public DbSet<DeductionLevelModel> DeductionLevel { get; set; }
+        public DbSet<SalaryCoefficientModel> SalaryCoefficients { get; set; }
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -63,7 +64,10 @@ namespace WEB_API_HRM.Data
                 .HasOne(b => b.Department)
                 .WithMany() 
                 .HasForeignKey(b => b.DepartmentId)
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SalaryCoefficientModel>()
+                .HasOne(j => j.Position).WithMany().HasForeignKey(j => j.PositionId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
