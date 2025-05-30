@@ -26,6 +26,8 @@ namespace WEB_API_HRM.Data
         public DbSet<HolidayModel> Holidays { get; set; }
         public DbSet<CheckInOutSettingModel> CheckInOutSettings { get; set; }
         public DbSet<RateInsuranceModel> RateInsurances { get; set; }
+        public DbSet<TaxRateProgressionModel> TaxRateProgressions { get; set; }
+        public DbSet<DeductionLevelModel> DeductionLevel { get; set; }
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

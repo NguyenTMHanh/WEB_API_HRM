@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WEB_API_HRM.Data;
@@ -11,9 +12,10 @@ using WEB_API_HRM.Data;
 namespace WEB_API_HRM.Migrations
 {
     [DbContext(typeof(HRMContext))]
-    partial class HRMContextModelSnapshot : ModelSnapshot
+    [Migration("20250530045520_AddTaxRateProgressionTable")]
+    partial class AddTaxRateProgressionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,22 +340,6 @@ namespace WEB_API_HRM.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CheckInOutSettings");
-                });
-
-            modelBuilder.Entity("WEB_API_HRM.Models.DeductionLevelModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<double>("DependentDeduction")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("IndividualDeduction")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DeductionLevel");
                 });
 
             modelBuilder.Entity("WEB_API_HRM.Models.DepartmentModel", b =>

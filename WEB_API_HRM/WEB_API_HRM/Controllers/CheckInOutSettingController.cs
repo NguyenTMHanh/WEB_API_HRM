@@ -19,7 +19,6 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpGet("GetCheckInOutTime")]
-        [Authorize(Policy = "CanViewSettings")]
         public async Task<ActionResult<CheckInOutSetitngDto>> GetCheckInOutSetting()
         {
             try
@@ -39,7 +38,6 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpGet("GetBreakTime")]
-        [Authorize(Policy = "CanViewSettings")]
         public async Task<ActionResult<BreakTimeDto>> GetBreakTimeSetting()
         {
             try
