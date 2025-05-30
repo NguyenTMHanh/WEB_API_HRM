@@ -108,6 +108,7 @@ builder.Services.AddScoped<IDeductionLevelRepository, DeductionLevelRepository>(
 builder.Services.AddScoped<ISalaryCoefficientRepository, SalaryCoefficientRepository>();
 builder.Services.AddScoped<IAllowanceRepository, AllowanceRepository>();
 builder.Services.AddScoped<IMinimumWageAreaRepository, MinimumWageAreaRepository>();
+builder.Services.AddScoped<IBasicSettingSalaryRepository, BasicSettingSalaryRepository>();
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>
 {
