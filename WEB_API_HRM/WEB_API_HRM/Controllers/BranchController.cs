@@ -92,7 +92,11 @@ namespace WEB_API_HRM.Controllers
                     if (errors.Any(e => e.Contains("Branch not found.")))
                     {
                         return NotFound(new Response(CustomCodes.NotFound, "Branch update failed: Branch not found", errors: errors));
-                    }                                  
+                    }
+                    else if (errors.Any(e => e.Contains("Branch already exists in the system.")))
+                    {
+                        return BadRequest(new Response(CustomCodes.Exists, "Branch update failed", errors: errors));
+                    }
                     return BadRequest(new Response(CustomCodes.InvalidRequest, "branch update failed", errors: errors));
                 }
                 return Ok(new Response(0, "branch updated successfully"));

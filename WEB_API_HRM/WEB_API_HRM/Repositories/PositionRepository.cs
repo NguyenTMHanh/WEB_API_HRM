@@ -130,15 +130,17 @@ namespace WEB_API_HRM.Repositories
                     Description = "Position not found"
                 });
             }
-
-            if(await _context.Positions.FirstOrDefaultAsync(p => p.PositionName == dto.PositionName) != null)
+            var positionCheckList = await _context.Positions.ToListAsync();
+            foreach (var positionCheck in positionCheckList)
             {
-                return IdentityResult.Failed(new IdentityError
+                if (positionCheck.PositionName == dto.PositionName && positionCheck.Id != positionId)
                 {
-                    Description = "Position already exists in the system."
-                });
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Description = "Position already exists in the system."
+                    });
+                }
             }
-
             var department = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == dto.DepartmentName);
             if(department == null)
             {

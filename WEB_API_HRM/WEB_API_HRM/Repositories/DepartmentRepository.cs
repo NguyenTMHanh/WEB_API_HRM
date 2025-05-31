@@ -98,19 +98,16 @@ namespace WEB_API_HRM.Repositories
                     Description = "Department not found"
                 });
             }
-            else if (await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == model.DepartmentName) != null)
+            var departmentCheckList = await _context.Departments.ToListAsync();
+            foreach (var departmentCheck in departmentCheckList)
             {
-                return IdentityResult.Failed(new IdentityError
+                if (departmentCheck.DepartmentName == model.DepartmentName && departmentCheck.Id != departmentId)
                 {
-                    Description = "Department already exists in the system."
-                });
-            }
-
-            {
-                return IdentityResult.Failed(new IdentityError
-                {
-                    Description = "Position already exists in the system."
-                });
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Description = "Department already exists in the system."
+                    });
+                }
             }
             department.DepartmentName = model.DepartmentName;
             department.Description = model.Description;

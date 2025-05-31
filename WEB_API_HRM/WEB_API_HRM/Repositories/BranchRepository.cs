@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WEB_API_HRM.Data;
 using WEB_API_HRM.DTO;
@@ -193,7 +194,17 @@ namespace WEB_API_HRM.Repositories
                 {
                     return IdentityResult.Failed(new IdentityError { Description = "Branch not found." });
                 }
-
+                var branchCheckList = await _context.Branchs.ToListAsync();
+                foreach (var branchCheck in branchCheckList)
+                {
+                    if (branchCheck.BranchName == model.BranchName && branchCheck.Id != branchId)
+                    {
+                        return IdentityResult.Failed(new IdentityError
+                        {
+                            Description = "Branch already exists in the system."
+                        });
+                    }
+                }
                 branch.BranchName = model.BranchName;
                 branch.Address = model.Address;
                 branch.Status = model.Status;
