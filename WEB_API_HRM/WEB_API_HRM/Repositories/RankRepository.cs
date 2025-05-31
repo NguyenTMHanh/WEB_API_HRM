@@ -99,13 +99,17 @@ namespace WEB_API_HRM.Repositories
                     Description = "Rank not found"
                 });
             }
-            else if(await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == model.RankName) != null)
+            var rankCheckList = await _context.Ranks.ToListAsync();
+            foreach(var rankCheck in rankCheckList)
             {
-                return IdentityResult.Failed(new IdentityError
+                if (rankCheck.RankName == model.RankName && rankCheck.Id != rankId)
                 {
-                    Description = "Rank already exists in the system."
-                });
-            }
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Description = "Rank already exists in the system."
+                    });
+                }
+            }           
             rank.PriorityLevel = model.PriorityLevel;
             rank.RankName = model.RankName;
             rank.Description = model.Description;

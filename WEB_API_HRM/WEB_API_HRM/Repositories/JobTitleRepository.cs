@@ -143,13 +143,16 @@ namespace WEB_API_HRM.Repositories
                     Description = "JobTitle not found"
                 });
             }
-
-            else if(await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == dto.JobtitleName) != null)
+            var jobtitleCheckList = await _context.JobTitles.ToListAsync();
+            foreach (var jobtitleCheck in jobtitleCheckList)
             {
-                return IdentityResult.Failed(new IdentityError
+                if (jobtitleCheck.JobTitleName == dto.JobtitleName && jobtitleCheck.Id != jobtitleId)
                 {
-                    Description = "JobTitle already exists in the system."
-                });
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Description = "JobTitle already exists in the system."
+                    });
+                }
             }
             var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == dto.RankName);
             if (rank == null)
