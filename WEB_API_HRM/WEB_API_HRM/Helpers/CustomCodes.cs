@@ -19,5 +19,14 @@
         public const int DuplicateIdentification = 1014;
         public const int InvalidPhoneNumber = 1015;
         public const int InvalidIdentification = 1014;
+        public const int BranchNotFound = 1015;
+        public const int DepartmentNotFound = 1016;
+        public const int JobtitleNotFound = 1017;
+        public const int RankNotFound = 1018;
+        public const int PositionNotFound = 1019;
+        public const int ManagerNotFound = 1020;
+        public const int JobTypeNotFound = 1021;
+        public const int EmployeeNotFound = 1022;
+        public const int DuplicatePersonel = 1023;
     }
 }

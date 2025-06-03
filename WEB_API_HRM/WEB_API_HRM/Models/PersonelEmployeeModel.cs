@@ -37,7 +37,6 @@ namespace WEB_API_HRM.Models
         public string JobTypeId { get; set; }
         [Required]
         public double MinuteBreakLunch { get; set; }
-
         public string AvatarPath { get; set; }
         [Required]
         public string UserId { get; set; }
