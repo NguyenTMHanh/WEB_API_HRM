@@ -14,5 +14,10 @@
         public const int InvalidToken = 6;
         public const int NotFound = 1010;
         public const int Exists = 1011;
+        public const int DuplicateEmail = 1012;
+        public const int DuplicatePhoneNumber = 1013;
+        public const int DuplicateIdentification = 1014;
+        public const int InvalidPhoneNumber = 1015;
+        public const int InvalidIdentification = 1014;
     }
 }
