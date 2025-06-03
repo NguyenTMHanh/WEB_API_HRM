@@ -143,19 +143,22 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanViewEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("setting", "view")));
+    options.AddPolicy("CanCreatePersonalEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profilePersonal", "create")));
 
-    options.AddPolicy("CanCreateEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("setting", "create")));
-
-    options.AddPolicy("CanUpdateEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("setting", "update")));
-
-    options.AddPolicy("CanDeleteEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("setting", "delete")));
+    options.AddPolicy("CanUpdatePersonalEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profilePersonal", "update")));
 });
 
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanCreatePersonelEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profilePersonel", "create")));
+
+    options.AddPolicy("CanUpdatePersonelEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profilePersonel", "update")));
+});
 
 // Đăng ký PermissionAuthorizationHandler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();

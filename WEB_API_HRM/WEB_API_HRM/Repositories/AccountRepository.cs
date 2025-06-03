@@ -7,6 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using WEB_API_HRM.Data;
 using WEB_API_HRM.Helpers;
 using WEB_API_HRM.Models;
@@ -102,14 +103,27 @@ namespace WEB_API_HRM.Repositories
             var existingUserByName = await userManager.FindByNameAsync(model.Username);
             if (existingUserByName != null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Username already exists in the system." });
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateUser",
+                    Description = "Username already exists in the system."
+                });
+                //return IdentityResult.Failed(new IdentityError { Description = "Username already exists in the system." });
             }
 
 
             var emailValidator = new EmailAddressAttribute();
             if (!emailValidator.IsValid(model.Email))
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Email format is invalid." });
+                if (!IsValidEmail(model.Email))
+                {
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Code = "InvalidEmail",
+                        Description = "Email format is invalid."
+                    });
+                }
+                //return IdentityResult.Failed(new IdentityError { Description = "Email format is invalid." });
             }
 
             var user = new ApplicationUser
@@ -131,7 +145,11 @@ namespace WEB_API_HRM.Repositories
                 }
                 else
                 {
-                    return IdentityResult.Failed(new IdentityError { Description = "Role not found" });
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Code = "RoleNotFound",
+                        Description = "Role not found."
+                    });
                 }
             }
 
@@ -248,5 +266,22 @@ namespace WEB_API_HRM.Repositories
                 UserId = userId
             };
         }
+
+        private bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            try
+            {
+                var regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+                return regex.IsMatch(email);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
     }
 }

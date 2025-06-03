@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 using WEB_API_HRM.DTO;
 using WEB_API_HRM.Helpers;
 using WEB_API_HRM.Models;
@@ -20,7 +21,7 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpPost("CreatePersonal")]
-        [Authorize(Policy = "CanCreateEmployees")]
+        [Authorize(Policy = "CanCreatePersonalEmployees")]
         public async Task<IActionResult> CreatePersonalEmployee([FromBody] CreatePersonalEmployeeDto model)
         {
             // Kiểm tra model có hợp lệ không (dựa trên các annotation trong DTO)
@@ -117,6 +118,224 @@ namespace WEB_API_HRM.Controllers
                         data: null,
                         errors: errorList
                     ));
+            }
+        }
+
+
+        [HttpPost("CreatePersonel")]
+        [Authorize(Policy = "CanCreatePersonelEmployees")]
+        public async Task<IActionResult> CreatePersonelEmployee([FromBody] CreatePersonelEmployeeDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new Response(
+                    code: CustomCodes.InvalidRequest,
+                    message: "Invalid request data.",
+                    data: null,
+                    errors: errors
+                ));
+            }
+
+            var result = await _employeeRepository.CreatePersonelEmployeeAsync(model);
+
+            // Kiểm tra kết quả từ IdentityResult
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0, 
+                    message: "Employee created successfully.",
+                    data: model,
+                    errors: new List<string>()
+                ));
+            }
+
+            // Thu thập tất cả lỗi từ IdentityResult
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+            if (!errorList.Any())
+            {
+                return BadRequest(new Response(
+                    code: CustomCodes.InvalidRequest,
+                    message: "An unknown error occurred.",
+                    data: null,
+                    errors: new List<string> { "An unknown error occurred." }
+                ));
+            }
+
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "EmployeeNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.EmployeeNotFound,
+                        message: "Employee not found. Please create personal employee first",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicatePersonel":
+                    return BadRequest(new Response(
+                        code: CustomCodes.DuplicatePersonel,
+                        message: "personel employee exist in system.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "BranchNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.BranchNotFound,
+                        message: "Branch not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DepartmentNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.DepartmentNotFound,
+                        message: "Department not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "JobtitleNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.JobtitleNotFound,
+                        message: "jobtitle not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+
+                case "RankNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.RankNotFound,
+                        message: "rank not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "PositionNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.PositionNotFound,
+                        message: "position not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+
+                case "ManagerNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.ManagerNotFound,
+                        message: "manager not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+
+                case "JobTypeNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.JobTypeNotFound,
+                        message: "job type not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicateUser":
+                    return BadRequest(new Response(
+                        code: CustomCodes.UsernameExists,
+                        message: "Username already exists in the system.",
+                        data: null,
+                        errors: errorList
+                    ));
+
+                case "InvalidEmail":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidEmail,
+                        message: "Email format is invalid.",
+                        data: null,
+                        errors: errorList
+                    ));
+
+
+                case "RoleNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.RoleNotFound,
+                        message: "Role not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while creating the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+        [HttpGet("CodeNameEmployee")]
+        public async Task<ActionResult<IEnumerable<CodeNameEmployeeRes>>> GetAllCodeNameEmployee()
+        {
+            try
+            {
+                var codeNameEmployees = await _employeeRepository.GetCodeNameEmployeeAsync();
+                return Ok(codeNameEmployees);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+        [HttpGet("CodeNameManager")]
+        public async Task<ActionResult<IEnumerable<CodeNameEmployeeRes>>> GetAllCodeNameManager(string employeeCode, string rankName)
+        {
+            try
+            {
+                var codeNameManagers = await _employeeRepository.GetCodeNameManagerAsync(employeeCode, rankName);
+                return Ok(codeNameManagers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+        [HttpGet("GetGenderBirth")]
+        public async Task<ActionResult<GenderDayOfBirthRes>> GetGenderBirth(string employeeCode)
+        {
+            try
+            {
+                var result = await _employeeRepository.GetGenderDayOfBirthAsync(employeeCode);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+        [HttpGet("GetAccountDefault")]
+        public async Task<ActionResult<AccountDefaultRes>> GetAccountDefault(string employeeCode)
+        {
+            try
+            {
+                var result = await _employeeRepository.GetAccountDefaultAsync(employeeCode);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+        [HttpGet("GetRoleEmployee")]
+        public async Task<ActionResult<string>> GetRoleEmployee(string jontitleName)
+        {
+            try
+            {
+                var result = await _employeeRepository.GetRoleEmployee(jontitleName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
             }
         }
     }
