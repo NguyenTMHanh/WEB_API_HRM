@@ -109,6 +109,7 @@ builder.Services.AddScoped<ISalaryCoefficientRepository, SalaryCoefficientReposi
 builder.Services.AddScoped<IAllowanceRepository, AllowanceRepository>();
 builder.Services.AddScoped<IMinimumWageAreaRepository, MinimumWageAreaRepository>();
 builder.Services.AddScoped<IBasicSettingSalaryRepository, BasicSettingSalaryRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>
 {
@@ -139,6 +140,22 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("CanDeleteSettings", policy =>
         policy.AddRequirements(new PermissionRequirement("setting", "delete")));
 });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "view")));
+
+    options.AddPolicy("CanCreateEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "create")));
+
+    options.AddPolicy("CanUpdateEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "update")));
+
+    options.AddPolicy("CanDeleteEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "delete")));
+});
+
 
 // Đăng ký PermissionAuthorizationHandler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();

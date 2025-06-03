@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WEB_API_HRM.Data;
@@ -11,9 +12,10 @@ using WEB_API_HRM.Data;
 namespace WEB_API_HRM.Migrations
 {
     [DbContext(typeof(HRMContext))]
-    partial class HRMContextModelSnapshot : ModelSnapshot
+    [Migration("20250601173959_removeRequireIdPersonalEmployeeTable")]
+    partial class removeRequireIdPersonalEmployeeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -727,6 +729,7 @@ namespace WEB_API_HRM.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("EmployeeCode")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Ethnicity")
@@ -1208,7 +1211,8 @@ namespace WEB_API_HRM.Migrations
                     b.HasOne("WEB_API_HRM.Models.EmployeeModel", "Employee")
                         .WithOne()
                         .HasForeignKey("WEB_API_HRM.Models.PersonalEmployeeModel", "EmployeeCode")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Employee");
                 });
