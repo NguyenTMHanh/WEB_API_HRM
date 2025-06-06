@@ -27,5 +27,7 @@ namespace WEB_API_HRM.Repositories
 
         Task<CreatePersonalEmployeeDto> GetPersonalInformationAsync(string employeeCode);
         Task<string> GetEmployeeCodeToUsername(string userId);
+
+        Task<PersonelInformationRes> GetPersonelInformationAsync(string employeeCode);
     }
 }

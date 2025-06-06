@@ -725,5 +725,44 @@ namespace WEB_API_HRM.Repositories
             var user = await _userManager.FindByIdAsync(userId);
             return user?.UserName; // Added null check for safety
         }
+
+        public async Task<PersonelInformationRes> GetPersonelInformationAsync(string employeeCode)
+        {
+            var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            if(personel == null)
+            {
+                return null;
+            }
+
+            var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
+            var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
+            var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.Id == personel.JobTitleId);
+            var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.Id == personel.RankId);
+            var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == personel.PositionId);
+            var manager = await _context.PersonalEmployees.FirstOrDefaultAsync(m => m.EmployeeCode == personel.ManagerId);
+            var jobtype = await _context.JobTypes.FirstOrDefaultAsync(j => j.Id == personel.JobTypeId);
+            var breakLunch = await _context.CheckInOutSettings.FirstOrDefaultAsync();
+            double breakLunchRes = breakLunch.BreakHour + ((double)breakLunch.BreakMinute / (double)60);
+            var personelRes = new PersonelInformationRes();
+            personelRes.EmployeeCode = personel.EmployeeCode ?? string.Empty;
+            personelRes.NameEmployee = personal.NameEmployee ?? string.Empty;
+            personelRes.Gender = personal.Gender ?? string.Empty;
+            personelRes.DateOfBirth = personal.DateOfBirth;
+            personelRes.DateJoinCompany = personel.DateJoinCompany;
+            personelRes.BranchName = branch.BranchName ?? string.Empty;
+            personelRes.DepartmentName = department.DepartmentName ?? string.Empty;
+            personelRes.JobtitleName = jobtitle.JobTitleName ?? string.Empty;
+            personelRes.RankName = rank.RankName ?? string.Empty;
+            personelRes.PositionName = position.PositionName ?? string.Empty;
+            personelRes.ManagerName = manager.NameEmployee ?? string.Empty;
+            personelRes.JobTypeName = jobtype.NameJobType ?? string.Empty;
+            personelRes.BreakLunch = breakLunchRes;
+            personelRes.AvatarPath = personel.AvatarPath ?? string.Empty;
+
+            return personelRes;
+        }
     }
 }
