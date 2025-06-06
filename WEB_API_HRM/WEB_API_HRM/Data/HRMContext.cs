@@ -40,6 +40,7 @@ namespace WEB_API_HRM.Data
         public DbSet<DependentModel> Dependents { get; set; }
         public DbSet<EmployeeAllowance> EmployeeAllowances { get; set; }
         public DbSet<EmployeeModel> Employees { get; set; }
+        public DbSet<FileUpload> FileUploads { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -196,6 +197,17 @@ namespace WEB_API_HRM.Data
             // EmployeeModel Configuration
             modelBuilder.Entity<EmployeeModel>()
                 .HasKey(e => e.EmployeeCode);
+
+            modelBuilder.Entity<FileUpload>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FileName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.UniqueFileName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.FilePath).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.ContentType).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.FileSize).IsRequired();
+                entity.Property(e => e.UploadDate).IsRequired();
+            });
         }
     }
 }
