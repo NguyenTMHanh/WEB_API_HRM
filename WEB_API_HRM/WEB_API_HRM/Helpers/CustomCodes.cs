@@ -28,5 +28,6 @@
         public const int JobTypeNotFound = 1021;
         public const int EmployeeNotFound = 1022;
         public const int DuplicatePersonel = 1023;
+        public const int DuplicateContract = 1024;
     }
 }
