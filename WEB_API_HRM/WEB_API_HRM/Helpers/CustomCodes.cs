@@ -29,5 +29,6 @@
         public const int EmployeeNotFound = 1022;
         public const int DuplicatePersonel = 1023;
         public const int DuplicateContract = 1024;
+        public const int DuplicateInsurance = 1025;
     }
 }

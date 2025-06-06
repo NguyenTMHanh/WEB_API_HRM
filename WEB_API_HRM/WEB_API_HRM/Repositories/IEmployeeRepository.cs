@@ -18,5 +18,10 @@ namespace WEB_API_HRM.Repositories
         Task<string> GetCodeContect(string employeeCode);
         Task<PositionCoeficientRes> GetPositionCoeficient (string employeeCode);
         Task<IdentityResult> CreateContractEmployeeAsync(CreateContractEmployeeDto model);
+
+        Task<RateInsuranceModel> GetRateInsuranceAsync();
+        Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnInsuranceAsync();
+        Task<IdentityResult> CreateInsuranceEmployeeAsync(CreateInsuranceDto model);
+
     }
 }

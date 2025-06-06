@@ -12,6 +12,7 @@ using WEB_API_HRM.Helpers;
 using WEB_API_HRM.RSP;
 using System.ComponentModel;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Diagnostics.Contracts;
 
 namespace WEB_API_HRM.Repositories
 {
@@ -545,6 +546,73 @@ namespace WEB_API_HRM.Repositories
 
 
             _context.ContractEmployees.Add(contract);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
+        }
+
+        public async Task<RateInsuranceModel> GetRateInsuranceAsync()
+        {
+            return await _context.RateInsurances.FirstOrDefaultAsync();            
+        }
+
+        public async Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnInsuranceAsync()
+        {
+            var personalEmpts = await _context.PersonalEmployees.ToListAsync();
+            var insuranceEmpts = await _context.InsuranceEmployees.ToListAsync();
+
+            var codeNameList = new List<CodeNameEmployeeRes>();
+            foreach (var employee in personalEmpts)
+            {
+                if (await _context.InsuranceEmployees.AnyAsync(e => e.EmployeeCode == employee.EmployeeCode))
+                    continue;
+                var codeName = new CodeNameEmployeeRes();
+                codeName.EmployeeCode = employee.EmployeeCode;
+                codeName.EmployeeName = employee.NameEmployee;
+                codeNameList.Add(codeName);
+            }
+            return codeNameList;
+        }
+
+        public async Task<IdentityResult> CreateInsuranceEmployeeAsync(CreateInsuranceDto model)
+        {
+            if (!(await _context.Employees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "EmployeeNotFound",
+                    Description = "Employee not found."
+                });
+            }
+            if ((await _context.InsuranceEmployees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateInsurance",
+                    Description = "insurance employee exist in system."
+                });
+            }
+
+            var rateInsurance = await _context.RateInsurances.FirstOrDefaultAsync();
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeCode == model.EmployeeCode);
+
+            var insurance = new InsuranceEmployeeModel();
+            insurance.Id = Guid.NewGuid().ToString();
+            insurance.CodeBHYT = model.CodeBHYT;
+            insurance.CodeBHXH = model.CodeBHXH;
+            insurance.RateInsuranceId = rateInsurance.Id;
+            insurance.RateInsurance = rateInsurance;
+            insurance.RegisterMedical = model.RegisterMedical;
+            insurance.DateStartParticipateBHYT = model.DateStartParticipateBHYT;
+            insurance.HasBHXH = model.HasBHXH;
+            insurance.DateStartParticipateBHXH = model.DateStartParticipateBHXH;
+            insurance.DateStartParticipateBHTN = model.DateStartParticipateBHTN;
+            insurance.InsuranceStatus = model.InsuranceStatus;
+            insurance.DateEndParticipateInsurance = model.DateEndParticipateInsurance;
+            insurance.Employee = employee;
+            insurance.EmployeeCode = model.EmployeeCode;
+
+
+            _context.InsuranceEmployees.Add(insurance);
             await _context.SaveChangesAsync();
             return IdentityResult.Success;
         }
