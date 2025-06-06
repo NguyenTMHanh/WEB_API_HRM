@@ -18,11 +18,6 @@ namespace WEB_API_HRM.Models
         public DateTime DateEndContract { get; set; }
 
         public string ContractStatus { get; set; }
-        public double HourlySalary { get; set; }
-        public double HourWorkStandard { get; set; }
-        public double DayWorkStandard { get; set; }
-        [Required]
-        public double MoneyBasicSalary { get; set; }
         [Required]
         public string SalaryCoefficientId { get; set; }
         [ForeignKey("SalaryCoefficientId")]

@@ -95,12 +95,7 @@ namespace WEB_API_HRM.Data
 
             // InsuranceEmployeeModel Configuration
             modelBuilder.Entity<InsuranceEmployeeModel>()
-                .HasKey(i => i.Id);
-            modelBuilder.Entity<InsuranceEmployeeModel>()
-                .HasOne(i => i.RateInsurance)
-                .WithMany()
-                .HasForeignKey(i => i.RateInsuranceId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasKey(i => i.Id);           
             modelBuilder.Entity<InsuranceEmployeeModel>()
                 .HasOne(i => i.Employee)
                 .WithOne()

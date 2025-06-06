@@ -10,10 +10,6 @@ namespace WEB_API_HRM.Models
         public string Id { get; set; }
         public string CodeBHYT { get; set; }
         [Required]
-        public string RateInsuranceId { get; set; }
-        [ForeignKey("RateInsuranceId")]
-        public RateInsuranceModel RateInsurance { get; set; }
-        [Required]
         public string RegisterMedical { get; set; }
         [Required]
         public DateTime DateStartParticipateBHYT { get; set; }
