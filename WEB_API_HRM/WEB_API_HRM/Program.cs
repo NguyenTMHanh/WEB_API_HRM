@@ -160,6 +160,15 @@ builder.Services.AddAuthorization(options =>
         policy.AddRequirements(new PermissionRequirement("profilePersonel", "update")));
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanCreateContractEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileContract", "create")));
+
+    options.AddPolicy("CanUpdateContractEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileContract", "update")));
+});
+
 // Đăng ký PermissionAuthorizationHandler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 

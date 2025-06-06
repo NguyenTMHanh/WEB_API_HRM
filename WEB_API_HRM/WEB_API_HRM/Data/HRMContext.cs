@@ -111,11 +111,6 @@ namespace WEB_API_HRM.Data
             modelBuilder.Entity<ContractEmployeeModel>()
                 .HasKey(c => c.Id);
             modelBuilder.Entity<ContractEmployeeModel>()
-                .HasOne(c => c.BasicSettingSalary)
-                .WithMany()
-                .HasForeignKey(c => c.BasicSettingSalaryId)
-                .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<ContractEmployeeModel>()
                 .HasOne(c => c.SalaryCoefficient)
                 .WithMany()
                 .HasForeignKey(c => c.SalaryCoefficientId)

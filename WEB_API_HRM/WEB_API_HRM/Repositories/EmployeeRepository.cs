@@ -10,6 +10,8 @@ using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using WEB_API_HRM.Helpers;
 using WEB_API_HRM.RSP;
+using System.ComponentModel;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace WEB_API_HRM.Repositories
 {
@@ -434,6 +436,117 @@ namespace WEB_API_HRM.Repositories
                 return role.Name;
             }
             return string.Empty;
+        }
+
+        public async Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnContractAsync()
+        {
+            var personalEmpts = await _context.PersonalEmployees.ToListAsync();
+            var contractEmpts = await _context.ContractEmployees.ToListAsync();
+
+            var codeNameList = new List<CodeNameEmployeeRes>();
+            foreach (var employee in personalEmpts)
+            {
+                if (await _context.ContractEmployees.AnyAsync(e => e.EmployeeCode == employee.EmployeeCode))
+                    continue;
+                var codeName = new CodeNameEmployeeRes();
+                codeName.EmployeeCode = employee.EmployeeCode;
+                codeName.EmployeeName = employee.NameEmployee;
+                codeNameList.Add(codeName);
+            }
+            return codeNameList;
+        }
+
+        public Task<string> GetCodeContect(string employeeCode)
+        {
+            string datePart = DateTime.Now.Date.ToString("ddMMyyyy");
+            string contractCode = $"{datePart}/HĐLĐ-{employeeCode}";
+            return Task.FromResult(contractCode);
+        }
+
+        public async Task<PositionCoeficientRes> GetPositionCoeficient(string employeeCode)
+        {
+            var employee = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+            var positionCoefficient = new PositionCoeficientRes();
+            if (employee != null)
+            {
+                var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == employee.PositionId);
+                var coefficient = await _context.SalaryCoefficients.FirstOrDefaultAsync(c => c.PositionId == position.Id);
+                positionCoefficient.PositionName = (position != null) ? position.PositionName : "";
+                positionCoefficient.Coefficient = (coefficient != null) ? coefficient.SalaryCoefficient : 0;
+                var basicSalary = await _context.BasicSettingSalary.FirstOrDefaultAsync();
+                positionCoefficient.HourWorkStandard = basicSalary.HourWorkStandard;
+                positionCoefficient.DayWorkStandard = basicSalary.DayWorkStandard;
+                positionCoefficient.HourlySalary = basicSalary.HourlySalary;
+                positionCoefficient.BasicSalary = (basicSalary.HourlySalary * basicSalary.HourWorkStandard * basicSalary.DayWorkStandard);
+            }
+            return positionCoefficient;
+        }
+
+        public async Task<IdentityResult> CreateContractEmployeeAsync(CreateContractEmployeeDto model)
+        {
+            if (!(await _context.Employees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "EmployeeNotFound",
+                    Description = "Employee not found."
+                });
+            }
+            if ((await _context.ContractEmployees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateContract",
+                    Description = "contract employee exist in system."
+                });
+            }
+            if (!(await _context.Positions.AnyAsync(p => p.PositionName == model.NamePosition)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "PositionNotFound",
+                    Description = "Position not found."
+                });
+            }
+
+            var position = await _context.Positions.FirstOrDefaultAsync(p => p.PositionName == model.NamePosition);
+            var coefficient = await _context.SalaryCoefficients.FirstOrDefaultAsync(c => c.PositionId == position.Id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeCode == model.EmployeeCode);
+            var employeeAllowances = new List<EmployeeAllowance>();
+            foreach(var allowanceRes in model.Allowances)
+            {
+                var allowance = await _context.Allowances.FirstOrDefaultAsync(e => e.NameAllowance == allowanceRes.NameAllowance);
+                var employeeAllowance = new EmployeeAllowance();
+                employeeAllowance.AllowanceId = allowance.Id;
+                employeeAllowance.EmployeeCode = model.EmployeeCode;
+
+                employeeAllowances.Add(employeeAllowance);
+
+            }
+
+            _context.EmployeeAllowances.AddRange(employeeAllowances);
+
+
+            var contract = new ContractEmployeeModel();
+            contract.Id = Guid.NewGuid().ToString();
+            contract.ContractCode = model.CodeContract;
+            contract.TypeContract = model.TypeContract ?? string.Empty;
+            contract.DateStartContract = model.StartContract;
+            contract.DateEndContract = model.EndContract;
+            contract.ContractStatus = model.StatusContract ?? string.Empty;
+            contract.HourlySalary = model.HourlySalary;
+            contract.HourWorkStandard = model.HourWorkStandard;
+            contract.DayWorkStandard = model.DayWorkStandard;
+            contract.MoneyBasicSalary = model.BasicSalary;
+            contract.SalaryCoefficientId = coefficient.Id;
+            contract.SalaryCoefficient = coefficient;
+            contract.EmployeeCode = model.EmployeeCode;
+            contract.Employee = employee;
+
+
+            _context.ContractEmployees.Add(contract);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
         }
     }
 }

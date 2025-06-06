@@ -14,5 +14,9 @@ namespace WEB_API_HRM.Repositories
         Task<GenderDayOfBirthRes> GetGenderDayOfBirthAsync(string employeeCode);
         Task<AccountDefaultRes> GetAccountDefaultAsync(string employeeCode);
         Task<string> GetRoleEmployee(string jobtitleName);
+        Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnContractAsync();
+        Task<string> GetCodeContect(string employeeCode);
+        Task<PositionCoeficientRes> GetPositionCoeficient (string employeeCode);
+        Task<IdentityResult> CreateContractEmployeeAsync(CreateContractEmployeeDto model);
     }
 }
