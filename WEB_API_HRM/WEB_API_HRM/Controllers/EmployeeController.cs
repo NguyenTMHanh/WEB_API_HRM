@@ -460,5 +460,108 @@ namespace WEB_API_HRM.Controllers
                     ));
             }
         }
+
+
+        [HttpGet("GetRateInsurance")]
+        public async Task<ActionResult<RateInsuranceModel>> GetRateInsurance()
+        {
+            try
+            {
+                var result = await _employeeRepository.GetRateInsuranceAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+        [HttpGet("CodeNameEmployeeUnInsurance")]
+        public async Task<ActionResult<IEnumerable<CodeNameEmployeeRes>>> GetAllCodeNameEmployeeUnInsurance()
+        {
+            try
+            {
+                var codeNameEmployees = await _employeeRepository.GetCodeNameEmployeeUnInsuranceAsync();
+                return Ok(codeNameEmployees);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+
+        [HttpPost("CreateInsurance")]
+        [Authorize(Policy = "CanCreateInsuranceEmployees")]
+        public async Task<IActionResult> CreateInsuranceEmployee([FromBody] CreateInsuranceDto model)
+        {
+            // Kiểm tra model có hợp lệ không (dựa trên các annotation trong DTO)
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new Response(
+                    code: CustomCodes.InvalidRequest,
+                    message: "Invalid request data.",
+                    data: null,
+                    errors: errors
+                ));
+            }
+
+            // Gọi repository để tạo nhân viên
+            var result = await _employeeRepository.CreateInsuranceEmployeeAsync(model);
+
+            // Kiểm tra kết quả từ IdentityResult
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee created successfully.",
+                    data: model,
+                    errors: new List<string>()
+                ));
+            }
+
+            // Thu thập tất cả lỗi từ IdentityResult
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+            if (!errorList.Any())
+            {
+                return BadRequest(new Response(
+                    code: CustomCodes.InvalidRequest,
+                    message: "An unknown error occurred.",
+                    data: null,
+                    errors: new List<string> { "An unknown error occurred." }
+                ));
+            }
+
+            // Ánh xạ các lỗi từ repository sang CustomCodes
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "EmployeeNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.EmployeeNotFound,
+                        message: "Employee not found. Please create personal employee first",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicateInsurance":
+                    return BadRequest(new Response(
+                        code: CustomCodes.DuplicateInsurance,
+                        message: "insurance employee exist in system.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while creating the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
     }
 }

@@ -169,6 +169,15 @@ builder.Services.AddAuthorization(options =>
         policy.AddRequirements(new PermissionRequirement("profileContract", "update")));
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanCreateInsuranceEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileInsurance", "create")));
+
+    options.AddPolicy("CanUpdateInsuranceEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileInsurance", "update")));
+});
+
 // Đăng ký PermissionAuthorizationHandler
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
