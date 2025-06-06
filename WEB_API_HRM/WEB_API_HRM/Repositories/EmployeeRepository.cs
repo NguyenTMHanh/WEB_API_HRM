@@ -608,10 +608,7 @@ namespace WEB_API_HRM.Repositories
             _context.InsuranceEmployees.Add(insurance);
             await _context.SaveChangesAsync();
             return IdentityResult.Success;
-        }
-
-        
-
+        }       
         public async Task<IdentityResult> CreateTaxEmployeeAsync(CreateTaxDto model)
         {
             if (!(await _context.Employees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
@@ -681,6 +678,52 @@ namespace WEB_API_HRM.Repositories
                 codeNameList.Add(codeName);
             }
             return codeNameList;
+        }
+
+        public async Task<CreatePersonalEmployeeDto> GetPersonalInformationAsync(string employeeCode)
+        {
+            var personal = await _context.PersonalEmployees
+                .FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            if (personal == null)
+            {
+                return null;
+            }
+
+            var personalRes = new CreatePersonalEmployeeDto
+            {
+                NameEmployee = personal.NameEmployee,
+                Gender = personal.Gender,
+                DateOfBirth = personal.DateOfBirth,
+                Nationality = personal.Nationality,
+                Ethnicity = personal.Ethnicity,
+                NumberIdentification = personal.NumberIdentification,
+                DateIssueIdentification = personal.DateIssueIdentification,
+                PlaceIssueIdentification = personal.PlaceIssueIdentification,
+                FrontIdentificationPath = personal.FrontIdentificationPath,
+                BackIdentificationPath = personal.BackIdentificationPath,
+                ProvinceResidence = personal.ProvinceResidence,
+                DistrictResidence = personal.DistrictResidence,
+                WardResidence = personal.WardResidence,
+                HouseNumberResidence = personal.HouseNumberResidence,
+                ProvinceContact = personal.ProvinceContact,
+                DistrictContact = personal.DistrictContact, // Fixed: was incorrectly set to ProvinceContact
+                WardContact = personal.WardContact,
+                HouseNumberContact = personal.HouseNumberContact,
+                Email = personal.Email,
+                PhoneNumber = personal.PhoneNumber,
+                BankNumber = personal.BankNumber,
+                NameBank = personal.NameBank,
+                BranchBank = personal.BranchBank
+            };
+
+            return personalRes;
+        }
+
+        public async Task<string> GetEmployeeCodeToUsername(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user?.UserName; // Added null check for safety
         }
     }
 }

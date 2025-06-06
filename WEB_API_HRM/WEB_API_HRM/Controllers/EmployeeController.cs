@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using WEB_API_HRM.DTO;
 using WEB_API_HRM.Helpers;
@@ -146,7 +147,7 @@ namespace WEB_API_HRM.Controllers
             if (result.Succeeded)
             {
                 return Ok(new Response(
-                    code: 0, 
+                    code: 0,
                     message: "Employee created successfully.",
                     data: model,
                     errors: new List<string>()
@@ -648,6 +649,61 @@ namespace WEB_API_HRM.Controllers
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response(-1, "An error occurred while processing your request.", errors: new List<string> { ex.Message }));
+            }
+        }
+
+        [HttpGet("GetPersonalInformation")]
+        public async Task<IActionResult> GetPersonalInformation(string employeeCode)
+        {
+            var result = await _employeeRepository.GetPersonalInformationAsync(employeeCode);
+            if(result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found. Please create personal employee first",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee geted successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+        [HttpGet("GetEmployeeCodeToUserId")]
+        public async Task<IActionResult> GetEmployeeCodeToUserId(string userId)
+        {
+            try
+            {
+                var result = await _employeeRepository.GetEmployeeCodeToUsername(userId); // Await the result
+                if (string.IsNullOrEmpty(result))
+                {
+                    return NotFound(new Response(
+                        code: CustomCodes.EmployeeNotFound,
+                        message: "User not found.",
+                        data: null,
+                        errors: new List<string>()
+                    ));
+                }
+                return Ok(new Response(
+                    code: 0, // Success
+                    message: "Employee code retrieved successfully.",
+                    data: result, // Now result is a string
+                    errors: new List<string>()
+                ));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response(
+                    code: -1,
+                    message: "An error occurred while processing your request.",
+                    data: null,
+                    errors: new List<string> { ex.Message }
+                ));
             }
         }
     }

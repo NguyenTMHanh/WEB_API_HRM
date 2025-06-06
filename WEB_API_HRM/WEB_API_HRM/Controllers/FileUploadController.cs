@@ -8,7 +8,6 @@ namespace WEB_API_HRM.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class FileUploadController : ControllerBase
     {
         private readonly HRMContext _context;
