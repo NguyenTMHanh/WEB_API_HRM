@@ -609,5 +609,78 @@ namespace WEB_API_HRM.Repositories
             await _context.SaveChangesAsync();
             return IdentityResult.Success;
         }
+
+        
+
+        public async Task<IdentityResult> CreateTaxEmployeeAsync(CreateTaxDto model)
+        {
+            if (!(await _context.Employees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "EmployeeNotFound",
+                    Description = "Employee not found."
+                });
+            }
+            if ((await _context.TaxEmployees.AnyAsync(e => e.EmployeeCode == model.EmployeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateTax",
+                    Description = "tax employee exist in system."
+                });
+            }
+
+
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeCode == model.EmployeeCode);
+            var tax = new TaxEmployeeModel();
+            tax.Id = Guid.NewGuid().ToString();
+            tax.HasTaxCode = model.HasTaxCode;
+            tax.TaxCode = model.TaxCode;
+            tax.Employee = employee;
+            tax.EmployeeCode = employee.EmployeeCode;
+
+            _context.TaxEmployees.Add(tax);
+
+            var dependents = new List<DependentModel>();
+            foreach(var dependentModel in model.Dependents)
+            {
+                var dependent = new DependentModel();
+                dependent.Id = Guid.NewGuid().ToString(); ;
+                dependent.RegisterDependentStatus = dependentModel.RegisterDependentStatus;
+                dependent.TaxCode = dependentModel.TaxCode;
+                dependent.NameDependent = dependentModel.NameDependent;
+                dependent.DayOfBirthDependent = dependentModel.DayOfBirthDependent;
+                dependent.Relationship = dependentModel.Relationship;
+                dependent.EvidencePath = dependentModel.EvidencePath;
+                dependent.Employee = employee;
+                dependent.EmployeeCode = employee.EmployeeCode;
+
+                dependents.Add(dependent);
+            }
+
+            _context.Dependents.AddRange(dependents);
+
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
+        }
+
+        public async Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnTaxAsync()
+        {
+            var personalEmpts = await _context.PersonalEmployees.ToListAsync();
+            var taxEmpts = await _context.TaxEmployees.ToListAsync();
+
+            var codeNameList = new List<CodeNameEmployeeRes>();
+            foreach (var employee in personalEmpts)
+            {
+                if (await _context.TaxEmployees.AnyAsync(e => e.EmployeeCode == employee.EmployeeCode))
+                    continue;
+                var codeName = new CodeNameEmployeeRes();
+                codeName.EmployeeCode = employee.EmployeeCode;
+                codeName.EmployeeName = employee.NameEmployee;
+                codeNameList.Add(codeName);
+            }
+            return codeNameList;
+        }
     }
 }

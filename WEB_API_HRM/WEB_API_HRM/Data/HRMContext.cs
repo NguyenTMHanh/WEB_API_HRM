@@ -176,7 +176,7 @@ namespace WEB_API_HRM.Data
             modelBuilder.Entity<DependentModel>()
                 .HasOne(d => d.Employee)
                 .WithMany()
-                .HasForeignKey(d => d.EmployeeId)
+                .HasForeignKey(d => d.EmployeeCode)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // EmployeeAllowance Configuration

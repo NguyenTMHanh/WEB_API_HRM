@@ -22,8 +22,8 @@ namespace WEB_API_HRM.Models
         [Required]
         public string EvidencePath { get; set; }
         [Required]
-        public string EmployeeId { get; set; }
-        [ForeignKey("EmployeeId")]
+        public string EmployeeCode { get; set; }
+        [ForeignKey("EmployeeCode")]
         public EmployeeModel Employee { get; set; }
     }
 }

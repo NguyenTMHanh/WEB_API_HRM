@@ -22,6 +22,7 @@ namespace WEB_API_HRM.Repositories
         Task<RateInsuranceModel> GetRateInsuranceAsync();
         Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnInsuranceAsync();
         Task<IdentityResult> CreateInsuranceEmployeeAsync(CreateInsuranceDto model);
-
+        Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnTaxAsync();
+        Task<IdentityResult> CreateTaxEmployeeAsync(CreateTaxDto model);
     }
 }

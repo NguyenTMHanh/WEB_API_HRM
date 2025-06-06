@@ -30,5 +30,6 @@
         public const int DuplicatePersonel = 1023;
         public const int DuplicateContract = 1024;
         public const int DuplicateInsurance = 1025;
+        public const int DuplicateTax = 1026;
     }
 }
