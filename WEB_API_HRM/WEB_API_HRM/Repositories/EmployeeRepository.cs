@@ -345,7 +345,6 @@ namespace WEB_API_HRM.Repositories
             personelEmployee.Position = position;
             personelEmployee.ManagerId = model.ManagerId;
             personelEmployee.JobTypeId = jobtype.Id;
-            personelEmployee.MinuteBreakLunch = model.BreakLunch;
             personelEmployee.AvatarPath = model.AvatarPath ?? string.Empty;
             personelEmployee.UserId = model.Username;
             personelEmployee.User = user;
@@ -535,10 +534,6 @@ namespace WEB_API_HRM.Repositories
             contract.DateStartContract = model.StartContract;
             contract.DateEndContract = model.EndContract;
             contract.ContractStatus = model.StatusContract ?? string.Empty;
-            contract.HourlySalary = model.HourlySalary;
-            contract.HourWorkStandard = model.HourWorkStandard;
-            contract.DayWorkStandard = model.DayWorkStandard;
-            contract.MoneyBasicSalary = model.BasicSalary;
             contract.SalaryCoefficientId = coefficient.Id;
             contract.SalaryCoefficient = coefficient;
             contract.EmployeeCode = model.EmployeeCode;
@@ -599,8 +594,6 @@ namespace WEB_API_HRM.Repositories
             insurance.Id = Guid.NewGuid().ToString();
             insurance.CodeBHYT = model.CodeBHYT;
             insurance.CodeBHXH = model.CodeBHXH;
-            insurance.RateInsuranceId = rateInsurance.Id;
-            insurance.RateInsurance = rateInsurance;
             insurance.RegisterMedical = model.RegisterMedical;
             insurance.DateStartParticipateBHYT = model.DateStartParticipateBHYT;
             insurance.HasBHXH = model.HasBHXH;
