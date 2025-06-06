@@ -20,7 +20,7 @@ namespace WEB_API_HRM.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpPost("UploadAvatar")]
+        [HttpPost("UploadFile")]
         public async Task<IActionResult> UploadAvatar(IFormFile file)
         {
             Console.WriteLine("Received request for UploadAvatar");
@@ -130,7 +130,7 @@ namespace WEB_API_HRM.Controllers
             }
         }
 
-        [HttpGet("GetAvatar/{id}")]
+        [HttpGet("GetFile/{id}")]
         public async Task<IActionResult> GetAvatar(string id)
         {
             var fileInfo = await _context.FileUploads.FindAsync(id);
@@ -155,7 +155,7 @@ namespace WEB_API_HRM.Controllers
             return File(fileBytes, fileInfo.ContentType, fileInfo.FileName);
         }
 
-        [HttpDelete("DeleteAvatar/{id}")]
+        [HttpDelete("DeleteFile/{id}")]
         public async Task<IActionResult> DeleteAvatar(string id)
         {
             var fileInfo = await _context.FileUploads.FindAsync(id);
