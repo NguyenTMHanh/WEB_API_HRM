@@ -772,5 +772,27 @@ namespace WEB_API_HRM.Controllers
                     errors: new List<string>()
             ));
         }
+
+
+        [HttpGet("GetTaxInformation")]
+        public async Task<IActionResult> GetTaxInformation(string employeeCode)
+        {
+            var result = await _employeeRepository.GetTaxInformationAsync(employeeCode);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found. Please create tax employee first",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee geted successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
     }
 }
