@@ -13,6 +13,8 @@ using WEB_API_HRM.RSP;
 using System.ComponentModel;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics.Contracts;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace WEB_API_HRM.Repositories
 {
@@ -729,13 +731,13 @@ namespace WEB_API_HRM.Repositories
         public async Task<PersonelInformationRes> GetPersonelInformationAsync(string employeeCode)
         {
             var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
-
-            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
-
+           
             if(personel == null)
             {
                 return null;
             }
+
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
 
             var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
             var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
@@ -763,6 +765,58 @@ namespace WEB_API_HRM.Repositories
             personelRes.AvatarPath = personel.AvatarPath ?? string.Empty;
 
             return personelRes;
+        }
+
+        public async Task<CreateContractEmployeeDto> GetContractInformationAsync(string employeeCode)
+        {
+            var contract = await _context.ContractEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            if(contract == null)
+            {
+                return null;
+            }
+
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            var basicSalarySetting = await _context.BasicSettingSalary.FirstOrDefaultAsync();
+
+            var salaryCoefficient = await _context.SalaryCoefficients.FirstOrDefaultAsync(s => s.Id == contract.SalaryCoefficientId);
+
+            var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == salaryCoefficient.PositionId);
+
+            var allowances = await _context.EmployeeAllowances.Where(a => a.EmployeeCode == employeeCode).ToListAsync();
+            var allowancesRes = new List<AllowanceRes>();
+
+            foreach(var allowance in allowances)
+            {
+                var allowanceRes = new AllowanceRes();
+
+                var allowanceModel = await _context.Allowances.FirstOrDefaultAsync(a => a.Id == allowance.AllowanceId);
+                allowanceRes.NameAllowance = allowanceModel.NameAllowance;
+                allowanceRes.MoneyAllowance = allowanceModel.MoneyAllowance;
+
+                allowancesRes.Add(allowanceRes);
+            }
+
+            var contractRes = new CreateContractEmployeeDto();
+            contractRes.EmployeeCode = contract.EmployeeCode;
+            contractRes.NameEmployee = personal.NameEmployee;
+            contractRes.Gender = personal.Gender;
+            contractRes.DateOfBirth = personal.DateOfBirth;
+            contractRes.CodeContract = contract.ContractCode;
+            contractRes.TypeContract = contract.TypeContract;
+            contractRes.StartContract = contract.DateStartContract;
+            contractRes.EndContract = contract.DateEndContract;
+            contractRes.StatusContract = contract.ContractStatus;
+            contractRes.HourlySalary = basicSalarySetting.HourlySalary;
+            contractRes.HourWorkStandard = basicSalarySetting.HourWorkStandard;
+            contractRes.NamePosition = position.PositionName;
+            contractRes.CoefficientSalary = salaryCoefficient.SalaryCoefficient;
+            contractRes.DayWorkStandard = basicSalarySetting.DayWorkStandard;
+            contractRes.BasicSalary = basicSalarySetting.HourlySalary * basicSalarySetting.HourWorkStandard * basicSalarySetting.DayWorkStandard;
+            contractRes.Allowances = allowancesRes;
+
+            return contractRes;
         }
     }
 }
