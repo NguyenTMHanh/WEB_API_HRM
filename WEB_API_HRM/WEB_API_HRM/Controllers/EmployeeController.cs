@@ -716,7 +716,7 @@ namespace WEB_API_HRM.Controllers
             {
                 return BadRequest(new Response(
                        code: CustomCodes.EmployeeNotFound,
-                       message: "Employee not found. Please create personal employee first",
+                       message: "Employee not found. Please create personel employee first",
                        data: null,
                        errors: new List<string>()
                    ));
@@ -734,6 +734,28 @@ namespace WEB_API_HRM.Controllers
         public async Task<IActionResult> GetContractInformation(string employeeCode)
         {
             var result = await _employeeRepository.GetContractInformationAsync(employeeCode);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found. Please create contract employee first",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee geted successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+        [HttpGet("GetInsuranceInformation")]
+        public async Task<IActionResult> GetInsuranceInformation(string employeeCode)
+        {
+            var result = await _employeeRepository.GetInsuranceInformationAsync(employeeCode);
             if (result == null)
             {
                 return BadRequest(new Response(
