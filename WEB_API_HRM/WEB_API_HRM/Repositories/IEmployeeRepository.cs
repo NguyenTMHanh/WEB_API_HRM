@@ -31,5 +31,7 @@ namespace WEB_API_HRM.Repositories
         Task<PersonelInformationRes> GetPersonelInformationAsync(string employeeCode);
 
         Task<CreateContractEmployeeDto> GetContractInformationAsync(string employeeCode);
+
+        Task<CreateInsuranceDto> GetInsuranceInformationAsync(string employeeCode);
     }
 }

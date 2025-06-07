@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics.Contracts;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace WEB_API_HRM.Repositories
 {
@@ -817,6 +818,41 @@ namespace WEB_API_HRM.Repositories
             contractRes.Allowances = allowancesRes;
 
             return contractRes;
+        }
+
+        public async Task<CreateInsuranceDto> GetInsuranceInformationAsync(string employeeCode)
+        {
+            var insurance = await _context.InsuranceEmployees.FirstOrDefaultAsync(i => i.EmployeeCode == employeeCode);
+
+            if (insurance == null)
+                return null;
+
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(p => p.EmployeeCode == employeeCode);
+
+            var rateInsurance = await _context.RateInsurances.FirstOrDefaultAsync();
+
+            var insuranceRes = new CreateInsuranceDto();
+            insuranceRes.EmployeeCode = employeeCode;
+            insuranceRes.NameEmployee = personal.NameEmployee;
+            insuranceRes.Gender = personal.Gender;
+            insuranceRes.DateOfBirth = personal.DateOfBirth;
+            insuranceRes.CodeBHYT = insurance.CodeBHYT;
+            insuranceRes.RateBHYTBussiness = rateInsurance.bhytBusinessRate;
+            insuranceRes.RateBHYTEmpt = rateInsurance.bhytEmpRate;
+            insuranceRes.RegisterMedical = insurance.RegisterMedical;
+            insuranceRes.DateStartParticipateBHYT = insurance.DateStartParticipateBHYT;
+            insuranceRes.HasBHXH = insurance.HasBHXH;
+            insuranceRes.CodeBHXH = insurance.CodeBHXH;
+            insuranceRes.RateBHXHEmpt = rateInsurance.bhxhEmpRate;
+            insuranceRes.RateBHXHBussiness = rateInsurance.bhxhBusinessRate;
+            insuranceRes.DateStartParticipateBHXH = insurance.DateStartParticipateBHXH;
+            insuranceRes.RateBHTNBussiness = rateInsurance.bhtnBusinessRate;
+            insuranceRes.RateBHTNEmpt = rateInsurance.bhtnEmpRate;
+            insuranceRes.DateStartParticipateBHTN = insurance.DateStartParticipateBHTN;
+            insuranceRes.InsuranceStatus = insurance.InsuranceStatus;
+            insuranceRes.DateEndParticipateInsurance = insurance.DateEndParticipateInsurance;
+
+            return insuranceRes;
         }
     }
 }
