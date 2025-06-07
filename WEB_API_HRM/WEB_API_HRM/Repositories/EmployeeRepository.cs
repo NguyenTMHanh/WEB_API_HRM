@@ -854,5 +854,43 @@ namespace WEB_API_HRM.Repositories
 
             return insuranceRes;
         }
+
+        public async Task<CreateTaxDto> GetTaxInformationAsync(string employeeCode)
+        {
+            var tax = await _context.TaxEmployees.FirstOrDefaultAsync(t => t.EmployeeCode == employeeCode);
+
+            if (tax == null)
+                return null;
+
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(p => p.EmployeeCode == employeeCode);
+
+            var dependents = await _context.Dependents.Where(d => d.EmployeeCode == employeeCode).ToListAsync();
+
+            var dependentsRes = new List<DependentRes>();
+
+            foreach(var dependent in dependents)
+            {
+                var dependentRes = new DependentRes();
+                dependentRes.RegisterDependentStatus = dependent.RegisterDependentStatus;
+                dependentRes.TaxCode = dependent.TaxCode;
+                dependentRes.NameDependent = dependent.NameDependent;
+                dependentRes.DayOfBirthDependent = dependent.DayOfBirthDependent;
+                dependentRes.Relationship = dependent.Relationship;
+                dependentRes.EvidencePath = dependent.EvidencePath;
+
+                dependentsRes.Add(dependentRes);
+            }
+
+            var taxRes = new CreateTaxDto();
+            taxRes.EmployeeCode = employeeCode;
+            taxRes.NameEmployee = personal.NameEmployee;
+            taxRes.Gender = personal.Gender;
+            taxRes.DateOfBirth = personal.DateOfBirth;
+            taxRes.HasTaxCode = tax.HasTaxCode;
+            taxRes.TaxCode = tax.TaxCode;
+            taxRes.Dependents = dependentsRes;
+
+            return taxRes;
+        }
     }
 }
