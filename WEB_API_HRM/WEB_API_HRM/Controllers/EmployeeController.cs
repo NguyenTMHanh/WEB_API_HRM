@@ -728,5 +728,27 @@ namespace WEB_API_HRM.Controllers
                     errors: new List<string>()
             ));
         }
+
+
+        [HttpGet("GetContractInformation")]
+        public async Task<IActionResult> GetContractInformation(string employeeCode)
+        {
+            var result = await _employeeRepository.GetContractInformationAsync(employeeCode);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found. Please create personal employee first",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee geted successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
     }
 }
