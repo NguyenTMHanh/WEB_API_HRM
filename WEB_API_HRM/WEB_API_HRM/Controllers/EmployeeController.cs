@@ -22,7 +22,7 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpPost("CreatePersonal")]
-        [Authorize(Policy = "CanCreatePersonalEmployees")]
+        [Authorize(Policy = "CanCreateHrPersonel")]
         public async Task<IActionResult> CreatePersonalEmployee([FromBody] CreatePersonalEmployeeDto model)
         {
             // Kiểm tra model có hợp lệ không (dựa trên các annotation trong DTO)
@@ -124,7 +124,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPost("CreatePersonel")]
-        [Authorize(Policy = "CanCreatePersonelEmployees")]
+        [Authorize(Policy = "CanCreateHrPersonel")]
         public async Task<IActionResult> CreatePersonelEmployee([FromBody] CreatePersonelEmployeeDto model)
         {
             if (!ModelState.IsValid)
@@ -383,7 +383,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPost("CreateContract")]
-        [Authorize(Policy = "CanCreateContractEmployees")]
+        [Authorize(Policy = "CanCreateHrPersonel")]
         public async Task<IActionResult> CreateContractEmployee([FromBody] CreateContractEmployeeDto model)
         {
             // Kiểm tra model có hợp lệ không (dựa trên các annotation trong DTO)
@@ -493,7 +493,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPost("CreateInsurance")]
-        [Authorize(Policy = "CanCreateInsuranceEmployees")]
+        [Authorize(Policy = "CanCreateHrPersonel")]
         public async Task<IActionResult> CreateInsuranceEmployee([FromBody] CreateInsuranceDto model)
         {
             // Kiểm tra model có hợp lệ không (dựa trên các annotation trong DTO)
@@ -566,7 +566,7 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpPost("CreateTax")]
-        [Authorize(Policy = "CanCreateTaxEmployees")]
+        [Authorize(Policy = "CanCreateHrPersonel")]
         public async Task<IActionResult> CreateTaxEmployee([FromBody] CreateTaxDto model)
         {
             // Kiểm tra model có hợp lệ không (dựa trên các annotation trong DTO)

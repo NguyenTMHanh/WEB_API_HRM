@@ -146,35 +146,24 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanCreatePersonalEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("profilePersonal", "create")));
-
     options.AddPolicy("CanUpdatePersonalEmployees", policy =>
         policy.AddRequirements(new PermissionRequirement("profilePersonal", "update")));
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanCreatePersonelEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("profilePersonel", "create")));
-
     options.AddPolicy("CanUpdatePersonelEmployees", policy =>
         policy.AddRequirements(new PermissionRequirement("profilePersonel", "update")));
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanCreateContractEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("profileContract", "create")));
-
     options.AddPolicy("CanUpdateContractEmployees", policy =>
         policy.AddRequirements(new PermissionRequirement("profileContract", "update")));
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanCreateInsuranceEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("profileInsurance", "create")));
 
     options.AddPolicy("CanUpdateInsuranceEmployees", policy =>
         policy.AddRequirements(new PermissionRequirement("profileInsurance", "update")));
@@ -182,11 +171,23 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("CanCreateTaxEmployees", policy =>
-        policy.AddRequirements(new PermissionRequirement("profileTax", "create")));
-
     options.AddPolicy("CanUpdateTaxEmployees", policy =>
         policy.AddRequirements(new PermissionRequirement("profileTax", "update")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "view")));
+
+    options.AddPolicy("CanCreateHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "create")));
+
+    options.AddPolicy("CanUpdateHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "update")));
+
+    options.AddPolicy("CanDeleteHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "delete")));
 });
 
 // Đăng ký PermissionAuthorizationHandler
