@@ -16,5 +16,6 @@
         public string JobTypeName { get; set; }
         public double BreakLunch { get; set; }
         public string AvatarPath { get; set; }
+        public string RoleName { get; set; }
     }
 }

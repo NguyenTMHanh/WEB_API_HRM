@@ -794,5 +794,199 @@ namespace WEB_API_HRM.Controllers
                     errors: new List<string>()
             ));
         }
+
+
+        [HttpPut("UpdatePersonal/{employeeCode}")]
+
+        [Authorize(Policy = "CanUpdatePersonalEmployees")]
+        public async Task<IActionResult> UpdatePersonal([FromBody] CreatePersonalEmployeeDto model, string employeeCode)
+        {
+            var result = await _employeeRepository.UpdatePersonalEmployeeAsync(model, employeeCode);
+            // Kiểm tra kết quả từ IdentityResult
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: model,
+                    errors: new List<string>()
+                ));
+            }
+
+            // Thu thập tất cả lỗi từ IdentityResult
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+            if (!errorList.Any())
+            {
+                return BadRequest(new Response(
+                    code: CustomCodes.InvalidRequest,
+                    message: "An unknown error occurred.",
+                    data: null,
+                    errors: new List<string> { "An unknown error occurred." }
+                ));
+            }
+
+            // Ánh xạ các lỗi từ repository sang CustomCodes
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "EmployeeNotFound":
+                    return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+                case "InvalidEmail":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidEmail,
+                        message: "Email validation failed.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicateEmail":
+                    return Conflict(new Response(
+                        code: CustomCodes.DuplicateEmail,
+                        message: "Email already exists.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "InvalidPhoneNumber":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidPhoneNumber,
+                        message: "Phone number validation failed.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicatePhoneNumber":
+                    return Conflict(new Response(
+                        code: CustomCodes.DuplicatePhoneNumber,
+                        message: "Phone number already exists.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "InvalidCCCD":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidIdentification,
+                        message: "Citizen Identification Number validation failed.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicateCCCD":
+                    return Conflict(new Response(
+                        code: CustomCodes.DuplicateIdentification,
+                        message: "Citizen Identification Number already exists.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while creating the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+
+
+        [HttpPut("UpdateContract")]
+
+        [Authorize(Policy = "CanUpdateContractEmployees")]
+        public async Task<IActionResult> UpdateContract([FromBody] CreateContractEmployeeDto model)
+        {
+
+            var result = await _employeeRepository.UpdateContractEmployeeAsync(model);
+
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+
+        [HttpPut("UpdatePersonel")]
+
+        [Authorize(Policy = "CanUpdatePersonelEmployees")]
+        public async Task<IActionResult> UpdatePersonel([FromBody] CreatePersonelEmployeeDto model)
+        {
+            var result = await _employeeRepository.UpdatePersonelEmployeeAsync(model);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+        [HttpPut("UpdateInsurance")]
+
+        [Authorize(Policy = "CanUpdateInsuranceEmployees")]
+        public async Task<IActionResult> UpdateInsurance([FromBody] CreateInsuranceDto model)
+        {
+            var result = await _employeeRepository.UpdateInsuranceEmployeeAsync(model);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+
+        [HttpPut("UpdateTax")]
+         
+        [Authorize(Policy = "CanUpdateTaxEmployees")]
+        public async Task<IActionResult> UpdateTax([FromBody] CreateTaxDto model)
+        {
+            var result = await _employeeRepository.UpdateTaxEmployeeAsync(model);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
     }
 }
