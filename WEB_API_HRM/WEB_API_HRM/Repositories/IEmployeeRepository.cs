@@ -35,5 +35,11 @@ namespace WEB_API_HRM.Repositories
         Task<CreateInsuranceDto> GetInsuranceInformationAsync(string employeeCode);
 
         Task<CreateTaxDto> GetTaxInformationAsync(string employeeCode);
+
+        Task<IdentityResult> UpdatePersonalEmployeeAsync(CreatePersonalEmployeeDto model, string employeeCode);
+        Task<IdentityResult> UpdateContractEmployeeAsync(CreateContractEmployeeDto model);
+        Task<IdentityResult> UpdatePersonelEmployeeAsync(CreatePersonelEmployeeDto model);
+        Task<IdentityResult> UpdateInsuranceEmployeeAsync(CreateInsuranceDto model);
+        Task<IdentityResult> UpdateTaxEmployeeAsync(CreateTaxDto model);
     }
 }

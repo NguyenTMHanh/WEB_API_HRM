@@ -749,6 +749,13 @@ namespace WEB_API_HRM.Repositories
             var jobtype = await _context.JobTypes.FirstOrDefaultAsync(j => j.Id == personel.JobTypeId);
             var breakLunch = await _context.CheckInOutSettings.FirstOrDefaultAsync();
             double breakLunchRes = breakLunch.BreakHour + ((double)breakLunch.BreakMinute / (double)60);
+
+            var user = await _userManager.FindByNameAsync(employeeCode);
+
+            var roleUser = await _context.UserRoles.FirstOrDefaultAsync(u => u.UserId == user.Id);
+
+            var role = await _context.ApplicationRoles.FirstOrDefaultAsync(r => r.Id == roleUser.RoleId);
+
             var personelRes = new PersonelInformationRes();
             personelRes.EmployeeCode = personel.EmployeeCode ?? string.Empty;
             personelRes.NameEmployee = personal.NameEmployee ?? string.Empty;
@@ -760,11 +767,11 @@ namespace WEB_API_HRM.Repositories
             personelRes.JobtitleName = jobtitle.JobTitleName ?? string.Empty;
             personelRes.RankName = rank.RankName ?? string.Empty;
             personelRes.PositionName = position.PositionName ?? string.Empty;
-            personelRes.ManagerName = manager.NameEmployee ?? string.Empty;
+            personelRes.ManagerName = $"{employeeCode} - {manager.NameEmployee} " ?? string.Empty;
             personelRes.JobTypeName = jobtype.NameJobType ?? string.Empty;
             personelRes.BreakLunch = breakLunchRes;
             personelRes.AvatarPath = personel.AvatarPath ?? string.Empty;
-
+            personelRes.RoleName = role.Name;
             return personelRes;
         }
 
@@ -891,6 +898,256 @@ namespace WEB_API_HRM.Repositories
             taxRes.Dependents = dependentsRes;
 
             return taxRes;
+        }
+
+        public async Task<IdentityResult> UpdatePersonalEmployeeAsync(CreatePersonalEmployeeDto model, string employeeCode)
+        {
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+
+            if (!(await _context.Employees.AnyAsync(e => e.EmployeeCode == employeeCode)))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "EmployeeNotFound",
+                    Description = "Employee not found."
+                });
+            }
+
+            if (!IsValidEmail(model.Email))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "InvalidEmail",
+                    Description = "Email format is invalid."
+                });
+            }
+
+            // Kiểm tra email đã tồn tại
+            if (model.Email != personal.Email && await _context.PersonalEmployees.AnyAsync(e => e.Email == model.Email))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateEmail",
+                    Description = "Email is already in use."
+                });
+            }
+
+            // Kiểm tra số điện thoại
+            if (!IsValidPhoneNumber(model.PhoneNumber))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "InvalidPhoneNumber",
+                    Description = "Phone number must be exactly 10 digits and start with a valid Vietnam mobile prefix."
+                });
+            }
+
+            // Kiểm tra số điện thoại đã tồn tại
+            if (model.PhoneNumber != personal.PhoneNumber && await _context.PersonalEmployees.AnyAsync(e => e.PhoneNumber == model.PhoneNumber))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicatePhoneNumber",
+                    Description = "Phone number is already in use."
+                });
+            }
+
+            // Kiểm tra số CCCD
+            if (!IsValidCCCD(model.NumberIdentification))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "InvalidCCCD",
+                    Description = "Citizen Identification Number (CCCD) must be exactly 12 digits."
+                });
+            }
+
+            // Kiểm tra CCCD đã tồn tại
+            if (model.NumberIdentification != personal.NumberIdentification && await _context.PersonalEmployees.AnyAsync(e => e.NumberIdentification == model.NumberIdentification))
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateCCCD",
+                    Description = "Citizen Identification Number (CCCD) is already in use."
+                });
+            }
+            personal.NameEmployee = model.NameEmployee;
+            personal.Gender = model.Gender;
+            personal.DateOfBirth = model.DateOfBirth;
+            personal.Nationality = model.Nationality ?? string.Empty;
+            personal.Ethnicity = model.Ethnicity ?? string.Empty;
+            personal.NumberIdentification = model.NumberIdentification;
+            personal.DateIssueIdentification = model.DateIssueIdentification;
+            personal.PlaceIssueIdentification = model.PlaceIssueIdentification ?? string.Empty;
+            personal.FrontIdentificationPath = model.FrontIdentificationPath;
+            personal.BackIdentificationPath = model.BackIdentificationPath;
+            personal.ProvinceResidence = model.ProvinceResidence ?? string.Empty;
+            personal.DistrictResidence = model.DistrictResidence ?? string.Empty;
+            personal.WardResidence = model.WardResidence ?? string.Empty;
+            personal.HouseNumberResidence = model.HouseNumberResidence ?? string.Empty;
+            personal.ProvinceContact = model.ProvinceContact ?? string.Empty;
+            personal.DistrictContact = model.DistrictContact ?? string.Empty;
+            personal.WardContact = model.WardContact ?? string.Empty;
+            personal.HouseNumberContact = model.HouseNumberContact ?? string.Empty;
+            personal.Email = model.Email;
+            personal.PhoneNumber = model.PhoneNumber;
+            personal.BankNumber = model.BankNumber;
+            personal.NameBank = model.NameBank;
+            personal.BranchBank = model.BranchBank;
+            personal.EmployeeCode = employeeCode;
+
+            _context.PersonalEmployees.Update(personal);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> UpdateContractEmployeeAsync(CreateContractEmployeeDto model)
+        {
+            var contract = await _context.ContractEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == model.EmployeeCode);
+
+            if (contract == null)
+                return null;
+
+            var position = await _context.Positions.FirstOrDefaultAsync(p => p.PositionName == model.NamePosition);
+
+            var salaryCoefficient = await _context.SalaryCoefficients.FirstOrDefaultAsync(s => s.PositionId == position.Id);
+
+            var employeeAllowanceOld = await _context.EmployeeAllowances.Where(e => e.EmployeeCode == model.EmployeeCode).ToListAsync();
+            foreach(var allowance in employeeAllowanceOld)
+            {
+                _context.EmployeeAllowances.Remove(allowance);
+            }
+
+            var employeeAllowances = new List<EmployeeAllowance>();
+            foreach(var allowance in model.Allowances)
+            {
+                var allowanceModel = await _context.Allowances.FirstOrDefaultAsync(a => a.NameAllowance == allowance.NameAllowance);
+                var employeeAllowance = new EmployeeAllowance();
+                employeeAllowance.AllowanceId = allowanceModel.Id;
+                employeeAllowance.EmployeeCode = model.EmployeeCode;
+                employeeAllowances.Add(employeeAllowance);
+            }
+
+            contract.ContractCode = model.CodeContract;
+            contract.TypeContract = model.TypeContract;
+            contract.DateStartContract = model.StartContract;
+            contract.DateEndContract = model.EndContract;
+            contract.SalaryCoefficientId = salaryCoefficient.Id;
+            contract.EmployeeAllowances = employeeAllowances;
+            contract.EmployeeCode = model.EmployeeCode;
+
+            _context.ContractEmployees.Update(contract);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> UpdatePersonelEmployeeAsync(CreatePersonelEmployeeDto model)
+        {
+            var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == model.EmployeeCode);
+
+            if (personel == null)
+                return null;
+
+            var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.BranchName == model.BranchName);
+            var department = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == model.DepartmentName);
+            var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == model.JobtitleName);
+            var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == model.RankName);
+            var jobtype = await _context.JobTypes.FirstOrDefaultAsync(j => j.NameJobType == model.JobTypeName);
+            var position = await _context.Positions.FirstOrDefaultAsync(p => p.PositionName == model.PositionName);
+
+            var role = await _context.ApplicationRoles.FirstOrDefaultAsync(r => r.Name == model.RoleName);
+
+            var user = await _userManager.FindByNameAsync(model.EmployeeCode);
+
+            var roleUser = await _context.UserRoles.FirstOrDefaultAsync(u => u.UserId == user.Id);
+
+            _context.UserRoles.Remove(roleUser);
+
+            var newRoleUser = new IdentityUserRole<string>();
+            newRoleUser.UserId = user.Id;
+            newRoleUser.RoleId = role.Id;
+
+            _context.UserRoles.Add(newRoleUser);
+
+
+            personel.DateJoinCompany = model.DateJoinCompany;
+            personel.BranchId = branch.Id;
+            personel.DepartmentId = department.Id;
+            personel.JobTitleId = jobtitle.Id;
+            personel.RankId = rank.Id;
+            personel.PositionId = position.Id;
+            personel.ManagerId = model.ManagerId;
+            personel.JobTypeId = jobtype.Id;
+            personel.AvatarPath = model.AvatarPath;
+            personel.EmployeeCode = model.EmployeeCode;
+            personel.RoleId = role.Id;
+
+            _context.PersonelEmployees.Update(personel);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> UpdateInsuranceEmployeeAsync(CreateInsuranceDto model)
+        {
+            var insurance = await _context.InsuranceEmployees.FirstOrDefaultAsync(i => i.EmployeeCode == model.EmployeeCode);
+
+            if (insurance == null)
+                return null;
+
+            insurance.CodeBHYT = model.CodeBHYT;
+            insurance.RegisterMedical = model.RegisterMedical;
+            insurance.DateStartParticipateBHYT = model.DateStartParticipateBHYT;
+            insurance.HasBHXH = model.HasBHXH;
+            insurance.CodeBHXH = model.CodeBHXH;
+            insurance.DateStartParticipateBHXH = model.DateStartParticipateBHXH;
+            insurance.DateStartParticipateBHTN = model.DateStartParticipateBHTN;
+            insurance.InsuranceStatus = model.InsuranceStatus;
+            insurance.DateEndParticipateInsurance = model.DateEndParticipateInsurance;
+            insurance.EmployeeCode = model.EmployeeCode;
+
+            _context.InsuranceEmployees.Update(insurance);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> UpdateTaxEmployeeAsync(CreateTaxDto model)
+        {
+            var tax = await _context.TaxEmployees.FirstOrDefaultAsync(t => t.EmployeeCode == model.EmployeeCode);
+
+            if (tax == null)
+                return null;
+
+            tax.HasTaxCode = model.HasTaxCode;
+            tax.TaxCode = model.TaxCode;
+            tax.EmployeeCode = model.EmployeeCode;
+
+
+            var dependentOlds = await _context.Dependents.Where(d => d.EmployeeCode == model.EmployeeCode).ToListAsync();
+            foreach (var dependent in dependentOlds)
+            {
+                _context.Dependents.Remove(dependent);
+            }
+
+            var dependentNews = new List<DependentModel>();
+            foreach (var dependentRes in model.Dependents)
+            {
+                var dependentNew = new DependentModel();
+                dependentNew.Id = Guid.NewGuid().ToString();
+                dependentNew.RegisterDependentStatus = dependentRes.RegisterDependentStatus;
+                dependentNew.TaxCode = dependentRes.TaxCode;
+                dependentNew.NameDependent = dependentRes.NameDependent;
+                dependentNew.DayOfBirthDependent = dependentRes.DayOfBirthDependent;
+                dependentNew.Relationship = dependentRes.Relationship;
+                dependentNew.EvidencePath = dependentRes.EvidencePath;
+                dependentNew.EmployeeCode = model.EmployeeCode;
+
+                dependentNews.Add(dependentNew);
+            }
+            _context.Dependents.AddRange(dependentNews);
+
+            _context.TaxEmployees.Update(tax);
+            await _context.SaveChangesAsync();
+            return IdentityResult.Success;
         }
     }
 }
