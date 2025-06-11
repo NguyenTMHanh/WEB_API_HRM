@@ -16,6 +16,7 @@ using System.Diagnostics.Contracts;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 
 namespace WEB_API_HRM.Repositories
 {
@@ -1148,6 +1149,279 @@ namespace WEB_API_HRM.Repositories
             _context.TaxEmployees.Update(tax);
             await _context.SaveChangesAsync();
             return IdentityResult.Success;
+        }
+
+        public async Task<List<AllPersonalRes>> GetAllPersonal()
+        {
+            var personals = await _context.PersonalEmployees.ToListAsync();
+
+            var allPersonal = new List<AllPersonalRes>();
+            foreach(var personal in personals)
+            {
+                var personalRes = new AllPersonalRes();
+                var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == personal.EmployeeCode);
+                if(personel != null)
+                    personalRes.AvatarPath = personel.AvatarPath ?? string.Empty;
+                else
+                    personalRes.AvatarPath = string.Empty;
+                personalRes.EmployeeCode = personal.EmployeeCode;
+                personalRes.NameEmployee = personal.NameEmployee;
+                personalRes.Gender = personal.Gender;
+                personalRes.DayOfBirth = personal.DateOfBirth;
+                personalRes.Nationality = personal.Nationality ?? string.Empty;
+                personalRes.Ethnicity = personal.Ethnicity ?? string.Empty;
+                personalRes.ProvinceResidence = personal.ProvinceResidence ?? string.Empty;
+                personalRes.DistrictResidence = personal.DistrictResidence ?? string.Empty;
+                personalRes.WardResidence = personal.WardResidence ?? string.Empty;
+                personalRes.HouseNumberResidence = personal.HouseNumberResidence ?? string.Empty;
+                personalRes.ProvinceContact = personal.ProvinceContact ?? string.Empty;
+                personalRes.DistrictContact = personal.DistrictContact ?? string.Empty;
+                personalRes.WardContact = personal.WardContact ?? string.Empty;
+                personalRes.HouseNumberContact = personal.HouseNumberContact ?? string.Empty;
+                personalRes.Email = personal.Email;
+                personalRes.PhoneNumber = personal.PhoneNumber;
+                personalRes.BankNumber = personal.BankNumber;
+                personalRes.NameBank = personal.NameBank;
+
+                allPersonal.Add(personalRes);
+            }
+            return allPersonal;
+        }
+
+        public async Task<List<AllPersonelRes>> GetAllPersonel()
+        {
+            var personels = await _context.PersonelEmployees.ToListAsync();
+
+            var allPersonel = new List<AllPersonelRes>();
+
+            foreach(var personel in personels)
+            {
+                var personelRes = new AllPersonelRes();
+                personelRes.AvatarPath = personel.AvatarPath ?? string.Empty;
+                personelRes.EmployeeCode = personel.EmployeeCode;
+
+                var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == personel.EmployeeCode);
+
+                if (personal != null)
+                {
+                    personelRes.NameEmployee = personal.NameEmployee ?? string.Empty;
+                    personelRes.Email = personal.Email ?? string.Empty;
+                    personelRes.PhoneNumber = personal.PhoneNumber ?? string.Empty;
+                }                   
+                else
+                {
+                    personelRes.NameEmployee = string.Empty;
+                    personelRes.Email = string.Empty;
+                    personelRes.PhoneNumber = string.Empty;
+                }
+                    
+
+                var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
+
+                personelRes.BranchName = branch.BranchName;
+
+                var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
+
+                personelRes.DepartmentName = department.DepartmentName;
+
+                var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.Id == personel.JobTitleId);
+
+                personelRes.JobtitleName = jobtitle.JobTitleName;
+
+                var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.Id == personel.RankId);
+                personelRes.RankName = rank.RankName;
+
+                var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == personel.PositionId);
+                personelRes.PositionName = position.PositionName;
+
+                personelRes.DateJoinCompany = personel.DateJoinCompany;
+                var jobType = await _context.JobTypes.FirstOrDefaultAsync(j => j.Id == personel.JobTypeId);
+
+                var manager = await _context.PersonalEmployees.FirstOrDefaultAsync(e=>e.EmployeeCode ==  personel.ManagerId);
+                if (manager != null)
+                    personelRes.NameManager = manager.NameEmployee;
+                else
+                    personelRes.NameManager = string.Empty;
+
+
+                personelRes.JobtypeName = jobType.NameJobType;
+
+                var breakLunch = await _context.CheckInOutSettings.FirstOrDefaultAsync();
+
+                personelRes.BreakLunch = breakLunch.BreakHour + ((double)breakLunch.BreakMinute / (double)60);
+
+                allPersonel.Add(personelRes);
+            }
+
+            return allPersonel;
+        }
+
+        public async Task<List<AllContractRes>> GetAllContract()
+        {
+            var contracts = await _context.ContractEmployees.ToListAsync();
+
+            var allContract = new List<AllContractRes>();
+            foreach(var contract in contracts)
+            {
+                var contractRes = new AllContractRes();
+                contractRes.EmployeeCode = contract.EmployeeCode;
+                var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == contract.EmployeeCode);
+                if (personal != null)
+                    contractRes.NameEmployee = personal.NameEmployee;
+                else
+                    contractRes.NameEmployee = string.Empty;
+
+                var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == contract.EmployeeCode);
+                if(personel != null)
+                {
+                    contractRes.AvatarPath = personel.AvatarPath ?? string.Empty;
+                    var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
+
+                    contractRes.BranchName = branch.BranchName;
+
+                    var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
+
+                    contractRes.DepartmentName = department.DepartmentName;
+
+                    var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == personel.PositionId);
+                    contractRes.PositionName = position.PositionName;
+
+                    var coeficient = await _context.SalaryCoefficients.FirstOrDefaultAsync(c => c.PositionId == personel.PositionId);
+                    contractRes.CoefficientSalary = coeficient.SalaryCoefficient;
+
+                }
+                else
+                {
+                    contractRes.AvatarPath = string.Empty;
+                    contractRes.BranchName = string.Empty;
+                    contractRes.DepartmentName = string.Empty;
+                    contractRes.PositionName = string.Empty;
+                }
+
+                contractRes.ContractCode = contract.ContractCode ?? string.Empty;
+                contractRes.TypeContract = contract.TypeContract ?? string.Empty;
+                contractRes.StatusContract = contract.ContractStatus ?? string.Empty;
+
+                var basicSalary = await _context.BasicSettingSalary.FirstOrDefaultAsync();
+                contractRes.HourlySalary = basicSalary.HourlySalary;
+                contractRes.HourWorkStandard = basicSalary.HourWorkStandard;
+
+                contractRes.StartContract = contract.DateStartContract;
+                contractRes.EndContract = contract.DateEndContract;
+
+                allContract.Add(contractRes);
+            }
+            return allContract;
+        }
+
+        public async Task<List<AllInsuranceRes>> GetAllInsurance()
+        {
+            var insurances = await _context.InsuranceEmployees.ToListAsync();
+
+            var allInsurance = new List<AllInsuranceRes>();
+            foreach(var insurance in insurances)
+            {
+                var insuranceRes = new AllInsuranceRes();
+                insuranceRes.EmployeeCode = insurance.EmployeeCode;
+
+                var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == insurance.EmployeeCode);
+                if (personal != null)
+                    insuranceRes.NameEmployee = personal.NameEmployee;
+                else
+                    insuranceRes.NameEmployee = string.Empty;
+
+                var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == insurance.EmployeeCode);
+                if (personel != null)
+                {
+                    insuranceRes.AvatarPath = personel.AvatarPath ?? string.Empty;
+                    var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
+
+                    insuranceRes.BranchName = branch.BranchName;
+
+                    var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
+
+                    insuranceRes.DepartmentName = department.DepartmentName;
+
+                    var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == personel.PositionId);
+                    insuranceRes.PositionName = position.PositionName;                   
+                }
+                else
+                {
+                    insuranceRes.AvatarPath = string.Empty;
+                    insuranceRes.BranchName = string.Empty;
+                    insuranceRes.DepartmentName = string.Empty;
+                    insuranceRes.PositionName = string.Empty;
+                }
+
+                insuranceRes.CodeBHYT = insurance.CodeBHYT;
+                insuranceRes.CodeBHXH = insurance.CodeBHXH;
+                insuranceRes.HasBHXH = insurance.HasBHXH;
+                insuranceRes.StatusInsurance = insurance.InsuranceStatus ?? string.Empty;
+                insuranceRes.EndInsurance = insurance.DateEndParticipateInsurance;
+
+                var rateInsurance = await _context.RateInsurances.FirstOrDefaultAsync();
+                insuranceRes.BusinessRateBHYT = rateInsurance.bhytBusinessRate;
+                insuranceRes.EmptRateBHYT = rateInsurance.bhytEmpRate;
+                insuranceRes.BussinessRateBHXH = rateInsurance.bhxhBusinessRate;
+                insuranceRes.EmptRateBHXH = rateInsurance.bhxhEmpRate;
+                insuranceRes.BusinessRateBHTN = rateInsurance.bhtnBusinessRate;
+                insuranceRes.EmptRateBHTN = rateInsurance.bhtnEmpRate;
+
+                allInsurance.Add(insuranceRes);
+            }
+
+            return allInsurance;
+        }
+
+        public async Task<List<AllTaxRes>> GetAllTax()
+        {
+            var taxs = await _context.TaxEmployees.ToListAsync();
+
+            var allTax = new List<AllTaxRes>();
+
+            foreach(var tax in taxs)
+            {
+                var taxRes = new AllTaxRes();
+                taxRes.EmployeeCode = tax.EmployeeCode;
+                var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == tax.EmployeeCode);
+                if (personal != null)
+                    taxRes.NameEmployee = personal.NameEmployee;
+                else
+                    taxRes.NameEmployee = string.Empty;
+
+                var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == tax.EmployeeCode);
+                if (personel != null)
+                {
+                    taxRes.AvatarPath = personel.AvatarPath ?? string.Empty;
+                    var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
+
+                    taxRes.BranchName = branch.BranchName;
+
+                    var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
+
+                    taxRes.DepartmentName = department.DepartmentName;
+
+                    var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == personel.PositionId);
+                    taxRes.PositionName = position.PositionName;
+                }
+                else
+                {
+                    taxRes.AvatarPath = string.Empty;
+                    taxRes.BranchName = string.Empty;
+                    taxRes.DepartmentName = string.Empty;
+                    taxRes.PositionName = string.Empty;
+                }
+
+                taxRes.HasTax = tax.HasTaxCode;
+                taxRes.CodeTax = tax.TaxCode;
+
+                int countDependent = await _context.Dependents.Where(d => d.EmployeeCode == tax.EmployeeCode).CountAsync();
+                taxRes.CountDependent = countDependent;
+
+                allTax.Add(taxRes);
+            }
+
+            return allTax;
         }
     }
 }
