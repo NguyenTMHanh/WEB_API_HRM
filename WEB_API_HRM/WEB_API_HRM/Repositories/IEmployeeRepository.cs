@@ -25,7 +25,7 @@ namespace WEB_API_HRM.Repositories
         Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnTaxAsync();
         Task<IdentityResult> CreateTaxEmployeeAsync(CreateTaxDto model);
 
-        Task<CreatePersonalEmployeeDto> GetPersonalInformationAsync(string employeeCode);
+        Task<PersonalInfoRes> GetPersonalInformationAsync(string employeeCode);
         Task<string> GetEmployeeCodeToUsername(string userId);
 
         Task<PersonelInformationRes> GetPersonelInformationAsync(string employeeCode);

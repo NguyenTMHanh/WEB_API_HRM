@@ -684,7 +684,7 @@ namespace WEB_API_HRM.Repositories
             return codeNameList;
         }
 
-        public async Task<CreatePersonalEmployeeDto> GetPersonalInformationAsync(string employeeCode)
+        public async Task<PersonalInfoRes> GetPersonalInformationAsync(string employeeCode)
         {
             var personal = await _context.PersonalEmployees
                 .FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
@@ -694,7 +694,7 @@ namespace WEB_API_HRM.Repositories
                 return null;
             }
 
-            var personalRes = new CreatePersonalEmployeeDto
+            var personalRes = new PersonalInfoRes
             {
                 NameEmployee = personal.NameEmployee,
                 Gender = personal.Gender,
@@ -718,7 +718,8 @@ namespace WEB_API_HRM.Repositories
                 PhoneNumber = personal.PhoneNumber,
                 BankNumber = personal.BankNumber,
                 NameBank = personal.NameBank,
-                BranchBank = personal.BranchBank
+                BranchBank = personal.BranchBank,
+                EmployeeCode = employeeCode
             };
 
             return personalRes;
@@ -1030,6 +1031,7 @@ namespace WEB_API_HRM.Repositories
             }
 
             contract.ContractCode = model.CodeContract;
+            contract.ContractStatus = model.StatusContract;
             contract.TypeContract = model.TypeContract;
             contract.DateStartContract = model.StartContract;
             contract.DateEndContract = model.EndContract;
@@ -1417,7 +1419,6 @@ namespace WEB_API_HRM.Repositories
 
                 int countDependent = await _context.Dependents.Where(d => d.EmployeeCode == tax.EmployeeCode).CountAsync();
                 taxRes.CountDependent = countDependent;
-
                 allTax.Add(taxRes);
             }
 
