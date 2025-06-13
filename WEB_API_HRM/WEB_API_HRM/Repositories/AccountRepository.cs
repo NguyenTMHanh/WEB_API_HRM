@@ -283,5 +283,26 @@ namespace WEB_API_HRM.Repositories
             }
         }
 
+        public async Task<InfoAccountRes> GetInfoAccount(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                return null;
+            }
+             
+            var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == user.UserName);
+            var infoAccount = new InfoAccountRes();
+            if(personel == null)
+            {
+                infoAccount.AvatarPath = string.Empty;
+            }
+            else
+            {
+                infoAccount.AvatarPath = personel.AvatarPath ?? string.Empty;
+            }
+            infoAccount.UserName = user.UserName;
+            return infoAccount;
+        }
     }
 }

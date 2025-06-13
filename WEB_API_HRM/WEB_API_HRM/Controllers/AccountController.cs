@@ -177,5 +177,28 @@ namespace WEB_API_HRM.Controllers
             }
         }
 
+        [HttpGet("GetInfoAccount")]
+        public async Task<IActionResult> GetInfoAccount(string userId)
+        {
+            var result = await accountRepo.GetInfoAccount(userId);
+            if(result == null)
+            {
+                return BadRequest(new Response(
+                        code: CustomCodes.UserNotFound,
+                        message: "user not found.",
+                        data: null,
+                        errors: new List<string>()
+                    ));
+            }
+            else
+            {
+                return Ok(new Response(
+                        code: 0, // Thành công
+                        message: "Information account geted successfully.",
+                        data: result,
+                        errors: new List<string>()
+                    ));
+            }      
+        }
     }
 }
