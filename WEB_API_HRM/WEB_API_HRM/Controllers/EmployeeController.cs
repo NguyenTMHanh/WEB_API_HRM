@@ -988,5 +988,72 @@ namespace WEB_API_HRM.Controllers
                     errors: new List<string>()
             ));
         }
+
+
+        [HttpGet("GetAllPersonal")]
+        [Authorize(Policy = "CanViewHrPersonel")]
+        public async Task<IActionResult> GetAllPersonal()
+        {
+            var result = await _employeeRepository.GetAllPersonal();
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Get all employee successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+        [HttpGet("GetAllPersonel")]
+        [Authorize(Policy = "CanViewHrPersonel")]
+        public async Task<IActionResult> GetAllPersonel()
+        {
+            var result = await _employeeRepository.GetAllPersonel();
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Get all employee successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+        [HttpGet("GetAllContract")]
+        [Authorize(Policy = "CanViewHrPersonel")]
+        public async Task<IActionResult> GetAllContract()
+        {
+            var result = await _employeeRepository.GetAllContract();
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Get all employee successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+        [HttpGet("GetAllInsurance")]
+        [Authorize(Policy = "CanViewHrPersonel")]
+        public async Task<IActionResult> GetAllInsurance()
+        {
+            var result = await _employeeRepository.GetAllInsurance();
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Get all employee successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+        [HttpGet("GetAllTax")]
+        [Authorize(Policy = "CanViewHrPersonel")]
+        public async Task<IActionResult> GetAllTax()
+        {
+            var result = await _employeeRepository.GetAllTax();
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Get all employee successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
     }
 }

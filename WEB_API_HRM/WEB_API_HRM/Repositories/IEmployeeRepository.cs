@@ -25,7 +25,7 @@ namespace WEB_API_HRM.Repositories
         Task<List<CodeNameEmployeeRes>> GetCodeNameEmployeeUnTaxAsync();
         Task<IdentityResult> CreateTaxEmployeeAsync(CreateTaxDto model);
 
-        Task<CreatePersonalEmployeeDto> GetPersonalInformationAsync(string employeeCode);
+        Task<PersonalInfoRes> GetPersonalInformationAsync(string employeeCode);
         Task<string> GetEmployeeCodeToUsername(string userId);
 
         Task<PersonelInformationRes> GetPersonelInformationAsync(string employeeCode);
@@ -41,5 +41,10 @@ namespace WEB_API_HRM.Repositories
         Task<IdentityResult> UpdatePersonelEmployeeAsync(CreatePersonelEmployeeDto model);
         Task<IdentityResult> UpdateInsuranceEmployeeAsync(CreateInsuranceDto model);
         Task<IdentityResult> UpdateTaxEmployeeAsync(CreateTaxDto model);
+        Task<List<AllPersonalRes>> GetAllPersonal();
+        Task<List<AllPersonelRes>> GetAllPersonel();
+        Task<List<AllContractRes>> GetAllContract();
+        Task<List<AllInsuranceRes>> GetAllInsurance();
+        Task<List<AllTaxRes>> GetAllTax();
     }
 }
