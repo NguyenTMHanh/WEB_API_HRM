@@ -46,5 +46,10 @@ namespace WEB_API_HRM.Repositories
         Task<List<AllContractRes>> GetAllContract();
         Task<List<AllInsuranceRes>> GetAllInsurance();
         Task<List<AllTaxRes>> GetAllTax();
+        Task<IdentityResult> DeletePersonal(string employeeCode);
+        Task<IdentityResult> DeletePersonel(string employeeCode);
+        Task<IdentityResult> DeleteContract(string employeeeCode);
+        Task<IdentityResult> DeleteInsurance(string employeeCode);
+        Task<IdentityResult> DeleteTax(string employeeCode);
     }
 }

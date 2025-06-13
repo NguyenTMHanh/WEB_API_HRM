@@ -797,8 +797,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPut("UpdatePersonal/{employeeCode}")]
-
-        [Authorize(Policy = "CanUpdatePersonalEmployees")]
+        [Authorize(Policy = "CanUpdateHrPersonel")]
         public async Task<IActionResult> UpdatePersonal([FromBody] CreatePersonalEmployeeDto model, string employeeCode)
         {
             var result = await _employeeRepository.UpdatePersonalEmployeeAsync(model, employeeCode);
@@ -891,8 +890,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPut("UpdateContract")]
-
-        [Authorize(Policy = "CanUpdateContractEmployees")]
+        [Authorize(Policy = "CanUpdateHrPersonel")]
         public async Task<IActionResult> UpdateContract([FromBody] CreateContractEmployeeDto model)
         {
 
@@ -918,8 +916,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPut("UpdatePersonel")]
-
-        [Authorize(Policy = "CanUpdatePersonelEmployees")]
+        [Authorize(Policy = "CanUpdateHrPersonel")]
         public async Task<IActionResult> UpdatePersonel([FromBody] CreatePersonelEmployeeDto model)
         {
             var result = await _employeeRepository.UpdatePersonelEmployeeAsync(model);
@@ -942,8 +939,7 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpPut("UpdateInsurance")]
-
-        [Authorize(Policy = "CanUpdateInsuranceEmployees")]
+        [Authorize(Policy = "CanUpdateHrPersonel")]
         public async Task<IActionResult> UpdateInsurance([FromBody] CreateInsuranceDto model)
         {
             var result = await _employeeRepository.UpdateInsuranceEmployeeAsync(model);
@@ -966,9 +962,8 @@ namespace WEB_API_HRM.Controllers
 
 
 
-        [HttpPut("UpdateTax")]
-         
-        [Authorize(Policy = "CanUpdateTaxEmployees")]
+        [HttpPut("UpdateTax")]         
+        [Authorize(Policy = "CanUpdateHrPersonel")]
         public async Task<IActionResult> UpdateTax([FromBody] CreateTaxDto model)
         {
             var result = await _employeeRepository.UpdateTaxEmployeeAsync(model);
@@ -990,8 +985,195 @@ namespace WEB_API_HRM.Controllers
         }
 
 
+        [HttpPut("UpdatePersonalIndividual/{employeeCode}")]
+        [Authorize(Policy = "CanUpdatePersonalEmployees")]
+        public async Task<IActionResult> UpdatePersonalIndividual([FromBody] CreatePersonalEmployeeDto model, string employeeCode)
+        {
+            var result = await _employeeRepository.UpdatePersonalEmployeeAsync(model, employeeCode);
+            // Kiểm tra kết quả từ IdentityResult
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: model,
+                    errors: new List<string>()
+                ));
+            }
+
+            // Thu thập tất cả lỗi từ IdentityResult
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+            if (!errorList.Any())
+            {
+                return BadRequest(new Response(
+                    code: CustomCodes.InvalidRequest,
+                    message: "An unknown error occurred.",
+                    data: null,
+                    errors: new List<string> { "An unknown error occurred." }
+                ));
+            }
+
+            // Ánh xạ các lỗi từ repository sang CustomCodes
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "EmployeeNotFound":
+                    return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+                case "InvalidEmail":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidEmail,
+                        message: "Email validation failed.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicateEmail":
+                    return Conflict(new Response(
+                        code: CustomCodes.DuplicateEmail,
+                        message: "Email already exists.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "InvalidPhoneNumber":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidPhoneNumber,
+                        message: "Phone number validation failed.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicatePhoneNumber":
+                    return Conflict(new Response(
+                        code: CustomCodes.DuplicatePhoneNumber,
+                        message: "Phone number already exists.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "InvalidCCCD":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidIdentification,
+                        message: "Citizen Identification Number validation failed.",
+                        data: null,
+                        errors: errorList
+                    ));
+                case "DuplicateCCCD":
+                    return Conflict(new Response(
+                        code: CustomCodes.DuplicateIdentification,
+                        message: "Citizen Identification Number already exists.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while creating the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+
+
+        [HttpPut("UpdateContractIndividual")]
+        [Authorize(Policy = "CanUpdateContractEmployees")]
+        public async Task<IActionResult> UpdateContractIndividual([FromBody] CreateContractEmployeeDto model)
+        {
+
+            var result = await _employeeRepository.UpdateContractEmployeeAsync(model);
+
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+
+        [HttpPut("UpdatePersonelIndividual")]
+        [Authorize(Policy = "CanUpdatePersonelEmployees")]
+        public async Task<IActionResult> UpdatePersonelIndividual([FromBody] CreatePersonelEmployeeDto model)
+        {
+            var result = await _employeeRepository.UpdatePersonelEmployeeAsync(model);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+        [HttpPut("UpdateInsuranceIndividual")]
+        [Authorize(Policy = "CanUpdateInsuranceEmployees")]
+        public async Task<IActionResult> UpdateInsuranceIndividual([FromBody] CreateInsuranceDto model)
+        {
+            var result = await _employeeRepository.UpdateInsuranceEmployeeAsync(model);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
+
+
+        [HttpPut("UpdateTaxIndividual")]
+        [Authorize(Policy = "CanUpdateTaxEmployees")]
+        public async Task<IActionResult> UpdateTaxIndividual([FromBody] CreateTaxDto model)
+        {
+            var result = await _employeeRepository.UpdateTaxEmployeeAsync(model);
+            if (result == null)
+            {
+                return BadRequest(new Response(
+                       code: CustomCodes.EmployeeNotFound,
+                       message: "Employee not found.",
+                       data: null,
+                       errors: new List<string>()
+                   ));
+            }
+            return Ok(new Response(
+                    code: 0, // Thành công
+                    message: "Employee updated successfully.",
+                    data: result,
+                    errors: new List<string>()
+            ));
+        }
+
         [HttpGet("GetAllPersonal")]
-        [Authorize(Policy = "CanViewHrPersonel")]
         public async Task<IActionResult> GetAllPersonal()
         {
             var result = await _employeeRepository.GetAllPersonal();
@@ -1004,7 +1186,6 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpGet("GetAllPersonel")]
-        [Authorize(Policy = "CanViewHrPersonel")]
         public async Task<IActionResult> GetAllPersonel()
         {
             var result = await _employeeRepository.GetAllPersonel();
@@ -1017,7 +1198,6 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpGet("GetAllContract")]
-        [Authorize(Policy = "CanViewHrPersonel")]
         public async Task<IActionResult> GetAllContract()
         {
             var result = await _employeeRepository.GetAllContract();
@@ -1030,7 +1210,6 @@ namespace WEB_API_HRM.Controllers
         }
 
         [HttpGet("GetAllInsurance")]
-        [Authorize(Policy = "CanViewHrPersonel")]
         public async Task<IActionResult> GetAllInsurance()
         {
             var result = await _employeeRepository.GetAllInsurance();
@@ -1044,7 +1223,6 @@ namespace WEB_API_HRM.Controllers
 
 
         [HttpGet("GetAllTax")]
-        [Authorize(Policy = "CanViewHrPersonel")]
         public async Task<IActionResult> GetAllTax()
         {
             var result = await _employeeRepository.GetAllTax();
@@ -1054,6 +1232,195 @@ namespace WEB_API_HRM.Controllers
                     data: result,
                     errors: new List<string>()
             ));
+        }
+
+        [HttpDelete("DeletePersonal/{employeeCode}")]
+        [Authorize(Policy = "CanDeleteHrPersonel")]
+        public async Task<IActionResult> DeletePersonal(string employeeCode)
+        {
+            var result = await _employeeRepository.DeletePersonal(employeeCode);
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0, 
+                    message: "Personal deleted successfully.",
+                    data: null,
+                    errors: new List<string>()
+                ));
+            }
+         
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "PersonalNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.PersonalNotFound,
+                        message: "Personal not found.",
+                        data: null,
+                        errors: errorList
+                    ));             
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while deleting the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+        [HttpDelete("DeletePersonel/{employeeCode}")]
+        [Authorize(Policy = "CanDeleteHrPersonel")]
+        public async Task<IActionResult> DeletePersonel(string employeeCode)
+        {
+            var result = await _employeeRepository.DeletePersonel(employeeCode);
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0,
+                    message: "Personel deleted successfully.",
+                    data: null,
+                    errors: new List<string>()
+                ));
+            }
+
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "PersonelNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.PersonelNotFound,
+                        message: "Personel not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while deleting the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+
+        [HttpDelete("DeleteInsurance/{employeeCode}")]
+        [Authorize(Policy = "CanDeleteHrPersonel")]
+        public async Task<IActionResult> DeleteInsurance(string employeeCode)
+        {
+            var result = await _employeeRepository.DeleteInsurance(employeeCode);
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0,
+                    message: "Insurance deleted successfully.",
+                    data: null,
+                    errors: new List<string>()
+                ));
+            }
+
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "InsuranceNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.InsuranceNotFound,
+                        message: "Insurance not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while deleting the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+
+        [HttpDelete("DeleteContract/{employeeCode}")]
+        [Authorize(Policy = "CanDeleteHrPersonel")]
+        public async Task<IActionResult> DeleteContract(string employeeCode)
+        {
+            var result = await _employeeRepository.DeleteContract(employeeCode);
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0,
+                    message: "Contract deleted successfully.",
+                    data: null,
+                    errors: new List<string>()
+                ));
+            }
+
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "ContractNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.ContractNotFound,
+                        message: "Contract not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while deleting the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
+        }
+
+
+
+        [HttpDelete("DeleteTax/{employeeCode}")]
+        [Authorize(Policy = "CanDeleteHrPersonel")]
+        public async Task<IActionResult> DeleteTax(string employeeCode)
+        {
+            var result = await _employeeRepository.DeleteTax(employeeCode);
+            if (result.Succeeded)
+            {
+                return Ok(new Response(
+                    code: 0,
+                    message: "Tax deleted successfully.",
+                    data: null,
+                    errors: new List<string>()
+                ));
+            }
+
+            var errorList = result.Errors.Select(e => e.Description).ToList();
+
+            var firstError = result.Errors.First();
+            switch (firstError.Code)
+            {
+                case "TaxNotFound":
+                    return BadRequest(new Response(
+                        code: CustomCodes.TaxNotFound,
+                        message: "Tax not found.",
+                        data: null,
+                        errors: errorList
+                    ));
+                default:
+                    return BadRequest(new Response(
+                        code: CustomCodes.InvalidRequest,
+                        message: "An error occurred while deleting the employee.",
+                        data: null,
+                        errors: errorList
+                    ));
+            }
         }
     }
 }

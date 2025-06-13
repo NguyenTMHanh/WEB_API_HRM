@@ -31,5 +31,10 @@
         public const int DuplicateContract = 1024;
         public const int DuplicateInsurance = 1025;
         public const int DuplicateTax = 1026;
+        public const int PersonalNotFound = 1027;
+        public const int PersonelNotFound = 1028;
+        public const int InsuranceNotFound = 1029;
+        public const int ContractNotFound = 1030;
+        public const int TaxNotFound = 1031;
     }
 }

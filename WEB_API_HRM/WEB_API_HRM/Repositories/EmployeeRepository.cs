@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace WEB_API_HRM.Repositories
 {
@@ -759,7 +760,7 @@ namespace WEB_API_HRM.Repositories
             var role = await _context.ApplicationRoles.FirstOrDefaultAsync(r => r.Id == roleUser.RoleId);
 
             var personelRes = new PersonelInformationRes();
-            personelRes.EmployeeCode = personel.EmployeeCode ?? string.Empty;
+            personelRes.EmployeeCode = personel.EmployeeCode ?? string.Empty;          
             personelRes.NameEmployee = personal.NameEmployee ?? string.Empty;
             personelRes.Gender = personal.Gender ?? string.Empty;
             personelRes.DateOfBirth = personal.DateOfBirth;
@@ -1423,6 +1424,113 @@ namespace WEB_API_HRM.Repositories
             }
 
             return allTax;
+        }
+
+        public async Task<IdentityResult> DeletePersonal(string employeeCode)
+        {
+            var personal = await _context.PersonalEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+            if(personal == null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "PersonalNotFound",
+                    Description = "Personal not found."
+                });
+            }
+            _context.PersonalEmployees.Remove(personal);           
+
+            await _context.SaveChangesAsync();
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> DeletePersonel(string employeeCode)
+        {
+            var personel = await _context.PersonelEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+            if(personel == null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "PersonelNotFound",
+                    Description = "Personel not found."
+                });
+            }
+
+            _context.PersonelEmployees.Remove(personel);
+
+            var user = await _userManager.FindByNameAsync(employeeCode);
+            if (user != null)
+            {
+                await _userManager.DeleteAsync(user);
+            }
+              
+            await _context.SaveChangesAsync();
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> DeleteContract(string employeeeCode)
+        {
+            var contract = await _context.ContractEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeeCode);
+            if(contract == null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "ContractNotFound",
+                    Description = "Contract not found."
+                });
+            }
+
+            _context.ContractEmployees.Remove(contract);
+
+            var allowanceEmpts = await _context.EmployeeAllowances.Where(a => a.EmployeeCode == employeeeCode).ToListAsync();
+            
+            _context.EmployeeAllowances.RemoveRange(allowanceEmpts);
+
+            await _context.SaveChangesAsync();
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> DeleteInsurance(string employeeCode)
+        {
+            var insurance = await _context.InsuranceEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+            if(insurance == null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "InsuranceNotFound",
+                    Description = "Insurance not found."
+                });
+            }
+
+            _context.InsuranceEmployees.Remove(insurance);
+            await _context.SaveChangesAsync();
+
+            return IdentityResult.Success;
+        }
+
+        public async Task<IdentityResult> DeleteTax(string employeeCode)
+        {
+            var tax = await _context.TaxEmployees.FirstOrDefaultAsync(e => e.EmployeeCode == employeeCode);
+            if (tax == null)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "TaxNotFound",
+                    Description = "Tax not found."
+                });
+            }
+
+            _context.TaxEmployees.Remove(tax);
+
+            var dependents = await _context.Dependents.Where(d => d.EmployeeCode == employeeCode).ToListAsync();
+
+            _context.Dependents.RemoveRange(dependents);
+
+            await _context.SaveChangesAsync();
+
+            return IdentityResult.Success;
         }
     }
 }
