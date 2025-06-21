@@ -19,10 +19,10 @@ namespace WEB_API_HRM.Models
         public string DepartmentId { get; set; }
         [ForeignKey("DepartmentId")]
         public DepartmentModel Department { get; set; }
-        [Required]
-        public string JobTitleId { get; set; }
-        [ForeignKey("JobTitleId")]
-        public JobTitleModel JobTitle { get; set; }
+        //[Required]
+        //public string JobTitleId { get; set; }
+        //[ForeignKey("JobTitleId")]
+        //public JobTitleModel JobTitle { get; set; }
         [Required]
         public string RankId { get; set; }
         [ForeignKey("RankId")]
