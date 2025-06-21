@@ -130,11 +130,11 @@ namespace WEB_API_HRM.Data
                 .WithMany()
                 .HasForeignKey(p => p.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<PersonelEmployeeModel>()
-                .HasOne(p => p.JobTitle)
-                .WithMany()
-                .HasForeignKey(p => p.JobTitleId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<PersonelEmployeeModel>()
+            //    .HasOne(p => p.JobTitle)
+            //    .WithMany()
+            //    .HasForeignKey(p => p.JobTitleId)
+            //    .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<PersonelEmployeeModel>()
                 .HasOne(p => p.Rank)
                 .WithMany()

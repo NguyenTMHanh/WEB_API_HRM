@@ -234,14 +234,14 @@ namespace WEB_API_HRM.Repositories
                 });
             }
 
-            if(!(await _context.JobTitles.AnyAsync(j => j.JobTitleName == model.JobtitleName)))
-            {
-                return IdentityResult.Failed(new IdentityError
-                {
-                    Code = "JobtitleNotFound",
-                    Description = "Jobtitle not found."
-                });
-            }
+            //if(!(await _context.JobTitles.AnyAsync(j => j.JobTitleName == model.JobtitleName)))
+            //{
+            //    return IdentityResult.Failed(new IdentityError
+            //    {
+            //        Code = "JobtitleNotFound",
+            //        Description = "Jobtitle not found."
+            //    });
+            //}
             if(!(await _context.Ranks.AnyAsync(r => r.RankName == model.RankName)))
             {
                 return IdentityResult.Failed(new IdentityError
@@ -285,7 +285,7 @@ namespace WEB_API_HRM.Repositories
 
             var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.BranchName == model.BranchName);
             var department = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == model.DepartmentName);
-            var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == model.JobtitleName);
+            //var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == model.JobtitleName);
             var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == model.RankName);
             var position = await _context.Positions.FirstOrDefaultAsync(p => p.PositionName == model.PositionName);
             var jobtype = await _context.JobTypes.FirstOrDefaultAsync(j => j.NameJobType == model.JobTypeName);
@@ -342,8 +342,8 @@ namespace WEB_API_HRM.Repositories
             personelEmployee.Branch = branch;
             personelEmployee.DepartmentId = department.Id;
             personelEmployee.Department = department;
-            personelEmployee.JobTitleId = jobtitle.Id;
-            personelEmployee.JobTitle = jobtitle;
+            //personelEmployee.JobTitleId = jobtitle.Id;
+            //personelEmployee.JobTitle = jobtitle;
             personelEmployee.RankId = rank.Id;
             personelEmployee.Rank = rank;
             personelEmployee.PositionId = position.Id;
@@ -745,7 +745,7 @@ namespace WEB_API_HRM.Repositories
 
             var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.Id == personel.BranchId);
             var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == personel.DepartmentId);
-            var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.Id == personel.JobTitleId);
+            //var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.Id == personel.JobTitleId);
             var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.Id == personel.RankId);
             var position = await _context.Positions.FirstOrDefaultAsync(p => p.Id == personel.PositionId);
             var manager = await _context.PersonalEmployees.FirstOrDefaultAsync(m => m.EmployeeCode == personel.ManagerId);
@@ -767,7 +767,7 @@ namespace WEB_API_HRM.Repositories
             personelRes.DateJoinCompany = personel.DateJoinCompany;
             personelRes.BranchName = branch.BranchName ?? string.Empty;
             personelRes.DepartmentName = department.DepartmentName ?? string.Empty;
-            personelRes.JobtitleName = jobtitle.JobTitleName ?? string.Empty;
+            //personelRes.JobtitleName = jobtitle.JobTitleName ?? string.Empty;
             personelRes.RankName = rank.RankName ?? string.Empty;
             personelRes.PositionName = position.PositionName ?? string.Empty;
             personelRes.ManagerName = $"{employeeCode} - {manager.NameEmployee} " ?? string.Empty;
@@ -1054,7 +1054,7 @@ namespace WEB_API_HRM.Repositories
 
             var branch = await _context.Branchs.FirstOrDefaultAsync(b => b.BranchName == model.BranchName);
             var department = await _context.Departments.FirstOrDefaultAsync(d => d.DepartmentName == model.DepartmentName);
-            var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == model.JobtitleName);
+            //var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.JobTitleName == model.JobtitleName);
             var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.RankName == model.RankName);
             var jobtype = await _context.JobTypes.FirstOrDefaultAsync(j => j.NameJobType == model.JobTypeName);
             var position = await _context.Positions.FirstOrDefaultAsync(p => p.PositionName == model.PositionName);
@@ -1077,7 +1077,7 @@ namespace WEB_API_HRM.Repositories
             personel.DateJoinCompany = model.DateJoinCompany;
             personel.BranchId = branch.Id;
             personel.DepartmentId = department.Id;
-            personel.JobTitleId = jobtitle.Id;
+           // personel.JobTitleId = jobtitle.Id;
             personel.RankId = rank.Id;
             personel.PositionId = position.Id;
             personel.ManagerId = model.ManagerId;
@@ -1227,9 +1227,9 @@ namespace WEB_API_HRM.Repositories
 
                 personelRes.DepartmentName = department.DepartmentName;
 
-                var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.Id == personel.JobTitleId);
+                //var jobtitle = await _context.JobTitles.FirstOrDefaultAsync(j => j.Id == personel.JobTitleId);
 
-                personelRes.JobtitleName = jobtitle.JobTitleName;
+                //personelRes.JobtitleName = jobtitle.JobTitleName;
 
                 var rank = await _context.Ranks.FirstOrDefaultAsync(r => r.Id == personel.RankId);
                 personelRes.RankName = rank.RankName;
