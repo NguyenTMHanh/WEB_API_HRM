@@ -9,6 +9,8 @@ using WEB_API_HRM.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using WEB_API_HRM.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,25 +96,98 @@ builder.Services.AddAuthentication(options =>
 // Đăng ký các repository
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRankRepository, RankRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IJobTitleRepository, JobTitleRepository>();
+builder.Services.AddScoped<IPositionRepository, PositionRepository>();
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
+builder.Services.AddScoped<ICheckInOutSettingRepository, CheckInOutRepository>();
+builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
+builder.Services.AddScoped<IJobTypeRepository, JobTypeRepository>();
+builder.Services.AddScoped<IRateInsuranceRepository, RateInsuranceRepository>();
+builder.Services.AddScoped<ITaxRateProgressionRepository, TaxRateProgressionRepository>();
+builder.Services.AddScoped<IDeductionLevelRepository, DeductionLevelRepository>();
+builder.Services.AddScoped<ISalaryCoefficientRepository, SalaryCoefficientRepository>();
+builder.Services.AddScoped<IAllowanceRepository, AllowanceRepository>();
+builder.Services.AddScoped<IMinimumWageAreaRepository, MinimumWageAreaRepository>();
+builder.Services.AddScoped<IBasicSettingSalaryRepository, BasicSettingSalaryRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 // Cấu hình Authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("CanViewRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "view"))
-              .AddRequirements(new PermissionRequirement("allModule", "fullAuthority")));
+        policy.AddRequirements(new PermissionRequirement("permission", "view")));
 
     options.AddPolicy("CanCreateRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "create"))
-              .AddRequirements(new PermissionRequirement("allModule", "create")));
+        policy.AddRequirements(new PermissionRequirement("permission", "create")));
 
     options.AddPolicy("CanUpdateRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "update"))
-              .AddRequirements(new PermissionRequirement("allModule", "update")));
+        policy.AddRequirements(new PermissionRequirement("permission", "update")));
 
     options.AddPolicy("CanDeleteRoles", policy =>
-        policy.AddRequirements(new PermissionRequirement("permission", "delete"))
-              .AddRequirements(new PermissionRequirement("allModule", "delete")));
+        policy.AddRequirements(new PermissionRequirement("permission", "delete")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "view")));
+
+    options.AddPolicy("CanCreateSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "create")));
+
+    options.AddPolicy("CanUpdateSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "update")));
+
+    options.AddPolicy("CanDeleteSettings", policy =>
+        policy.AddRequirements(new PermissionRequirement("setting", "delete")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanUpdatePersonalEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profilePersonal", "update")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanUpdatePersonelEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profilePersonel", "update")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanUpdateContractEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileContract", "update")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+
+    options.AddPolicy("CanUpdateInsuranceEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileInsurance", "update")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanUpdateTaxEmployees", policy =>
+        policy.AddRequirements(new PermissionRequirement("profileTax", "update")));
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanViewHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "view")));
+
+    options.AddPolicy("CanCreateHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "create")));
+
+    options.AddPolicy("CanUpdateHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "update")));
+
+    options.AddPolicy("CanDeleteHrPersonel", policy =>
+        policy.AddRequirements(new PermissionRequirement("HrPersonel", "delete")));
 });
 
 // Đăng ký PermissionAuthorizationHandler
@@ -193,5 +268,21 @@ app.MapGet("/proxy/api/districts/{code}", async ([FromServices] IHttpClientFacto
 }).RequireAuthorization();
 
 app.MapControllers();
+app.UseStaticFiles();
+
+// Configure static files for the uploads directory
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "uploads")),
+    RequestPath = "/Uploads"
+});
+
+// Cấu hình file upload size limit
+app.Use(async (context, next) =>
+{
+    context.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
+    await next.Invoke();
+});
 
 app.Run();

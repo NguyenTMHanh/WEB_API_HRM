@@ -12,8 +12,8 @@ using WEB_API_HRM.Data;
 namespace WEB_API_HRM.Migrations
 {
     [DbContext(typeof(HRMContext))]
-    [Migration("20250516153705_DbInit")]
-    partial class DbInit
+    [Migration("20250530063008_AddDeductionLevelTable")]
+    partial class AddDeductionLevelTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -232,6 +232,43 @@ namespace WEB_API_HRM.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("WEB_API_HRM.Data.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("IssueAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshToken");
+                });
+
             modelBuilder.Entity("WEB_API_HRM.Models.ActionModel", b =>
                 {
                     b.Property<string>("Id")
@@ -246,6 +283,169 @@ namespace WEB_API_HRM.Migrations
                     b.ToTable("Actions");
                 });
 
+            modelBuilder.Entity("WEB_API_HRM.Models.BranchDepartmentModel", b =>
+                {
+                    b.Property<string>("BranchId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DepartmentId")
+                        .HasColumnType("text");
+
+                    b.HasKey("BranchId", "DepartmentId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("BranchDepartment");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.BranchModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BranchName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Branchs");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.CheckInOutSettingModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("BreakHour")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BreakMinute")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("Checkin")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("Checkout")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CheckInOutSettings");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.DeductionLevelModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<double>("DependentDeduction")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("IndividualDeduction")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeductionLevel");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.DepartmentModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DepartmentName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.HolidayModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("HolidayName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ToDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Holidays");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.JobTitleModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("JobTitleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RankId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RankId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("JobTitles");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.JobTypeModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NameJobType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("WorkHourMinimum")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WorkMinuteMinimum")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobTypes");
+                });
+
             modelBuilder.Entity("WEB_API_HRM.Models.ModuleModel", b =>
                 {
                     b.Property<string>("Id")
@@ -258,6 +458,79 @@ namespace WEB_API_HRM.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Modules");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.PositionModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DepartmentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PositionName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.ToTable("Positions");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.RankModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PriorityLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RankName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ranks");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.RateInsuranceModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<double>("bhtnBusinessRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("bhtnEmpRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("bhxhBusinessRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("bhxhEmpRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("bhytBusinessRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("bhytEmpRate")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RateInsurances");
                 });
 
             modelBuilder.Entity("WEB_API_HRM.Models.RoleModuleActionModel", b =>
@@ -278,6 +551,25 @@ namespace WEB_API_HRM.Migrations
                     b.HasIndex("ModuleId");
 
                     b.ToTable("RoleModuleActions");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.TaxRateProgressionModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<double>("Progression")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TaxRate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("TaxableIncome")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxRateProgressions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -331,6 +623,66 @@ namespace WEB_API_HRM.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WEB_API_HRM.Data.RefreshToken", b =>
+                {
+                    b.HasOne("WEB_API_HRM.Data.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.BranchDepartmentModel", b =>
+                {
+                    b.HasOne("WEB_API_HRM.Models.BranchModel", "Branch")
+                        .WithMany("BranchDepartment")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WEB_API_HRM.Models.DepartmentModel", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.JobTitleModel", b =>
+                {
+                    b.HasOne("WEB_API_HRM.Models.RankModel", "Rank")
+                        .WithMany()
+                        .HasForeignKey("RankId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WEB_API_HRM.Data.ApplicationRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Rank");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.PositionModel", b =>
+                {
+                    b.HasOne("WEB_API_HRM.Models.DepartmentModel", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+                });
+
             modelBuilder.Entity("WEB_API_HRM.Models.RoleModuleActionModel", b =>
                 {
                     b.HasOne("WEB_API_HRM.Models.ActionModel", "Action")
@@ -361,6 +713,11 @@ namespace WEB_API_HRM.Migrations
             modelBuilder.Entity("WEB_API_HRM.Data.ApplicationRole", b =>
                 {
                     b.Navigation("RoleModuleActions");
+                });
+
+            modelBuilder.Entity("WEB_API_HRM.Models.BranchModel", b =>
+                {
+                    b.Navigation("BranchDepartment");
                 });
 #pragma warning restore 612, 618
         }
