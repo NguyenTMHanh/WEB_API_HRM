@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using WEB_API_HRM.Helpers;
 using WEB_API_HRM.Models;
@@ -7,7 +8,7 @@ namespace WEB_API_HRM.Data
 {
     public static class DbInitializer
     {
-        public static async Task SeedAsync(HRMContext context, RoleManager<ApplicationRole> roleManager)
+        public static async Task SeedAsync(HRMContext context, RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             try
             {
@@ -64,6 +65,28 @@ namespace WEB_API_HRM.Data
                     roleModuleAction.ActionId = "fullAuthority";
                     context.RoleModuleActions.Add(roleModuleAction);
                     await context.SaveChangesAsync();
+                }
+                if(!context.Users.Any())
+                {
+                    var user = new ApplicationUser
+                    {
+                        FirstName = "Admin",
+                        LastName = "Default",
+                        Email = "Admin@gmail.com",
+                        UserName = "Admin",
+                    };
+                    var password = "Abc@123";
+
+                    var result = await userManager.CreateAsync(user, password);
+
+                    if (result.Succeeded)
+                    {
+                        var role = await roleManager.Roles.FirstOrDefaultAsync(r => r.Id == AppRole.Admin);
+                        if (role != null)
+                        {
+                            await userManager.AddToRoleAsync(user, role.Name);
+                        }                       
+                    }
                 }
             }
             catch (Exception ex)

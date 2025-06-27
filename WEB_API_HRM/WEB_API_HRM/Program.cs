@@ -208,9 +208,10 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<HRMContext>();
     var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
     context.Database.EnsureCreated();
-    await DbInitializer.SeedAsync(context, roleManager);
+    await DbInitializer.SeedAsync(context, roleManager, userManager);
 }
 
 app.UseCors("AllowAll");
